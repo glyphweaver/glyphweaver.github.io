@@ -1,1 +1,371 @@
-Hello!!!
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GlyphWeaver</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/json/json.min.js"></script>
+
+    <script src="js/DataExpander.js"></script>
+    <script src="js/SVGRenderer.js"></script>
+    <script src="js/RelationProcessor.js"></script>
+    <script src="js/PatternGenerator.js"></script>
+    <link rel="stylesheet" href="css/modern.css">
+    <link rel="stylesheet" href="css/gallery.css">
+</head>
+
+<body>
+    <!-- Floating Top Bar -->
+    <header class="topbar">
+        <div class="container">
+            <div class="logo-container">
+                <img src="public/logo-lightmode.svg" alt="GlyphWeaver Logo" class="logo logo-light">
+                <img src="public/logo-darkmode.svg" alt="GlyphWeaver Logo" class="logo logo-dark">
+            </div>
+            <div class="nav-controls">
+                <nav class="main-nav">
+                    <ul>
+                        <li><a href="#use-cases">Use Cases</a></li>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#gallery">Gallery</a></li>
+                    </ul>
+                </nav>
+                <button id="dark-mode-toggle" aria-label="Toggle dark mode">
+                    <span class="icon">☀️</span>
+                </button>
+            </div>
+            <button class="hamburger-menu" aria-label="Toggle menu">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+        </div>
+        <!-- Mobile menu -->
+        <div class="mobile-menu">
+            <nav class="mobile-nav">
+                <ul>
+                    <li><a href="#use-cases">Use Cases</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#gallery">Gallery</a></li>
+                </ul>
+            </nav>
+            <button id="mobile-dark-mode-toggle" aria-label="Toggle dark mode">
+                <span class="toggle-label">Theme Mode</span>
+                <span class="toggle-icon">☀️</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Unlocking Glyph Creativity</h1>
+                <p>A no-code visualization tool that combines a domain-specific language with AI to streamline the creation of expressive data glyphs.</p>
+                <a href="#gallery" class="cta-button">Explore Examples</a>
+            </div>
+            <div class="hero-visual">
+                <img src="public/cover.png" alt="The interface of the GlyphWeaver">
+            </div>
+        </div>
+    </section>
+
+    <!-- Use Cases Section -->
+    <section id="use-cases" class="use-cases">
+        <div class="container">
+            <div class="section-subheading">Why GlyphWeaver</div>
+            <h2 class="section-title">D3-Grade Glyph Visualization Without Coding</h2>
+            <div class="use-cases-grid">
+                <div class="use-case-item">
+                    <div class="use-case-icon">
+                        <img src="public/no-code.svg" alt="No-Code Sophistication Icon" width="48" height="48">
+                    </div>
+                    <h3>No-Code Sophistication</h3>
+                    <p>GlyphWeaver translates your visual design intentions and natural language instructions into powerful data-driven elements, all within Figma –– your familiar design environment.</p>
+                </div>
+                <div class="use-case-item">
+                    <div class="use-case-icon">
+                        <img src="public/boundless.svg" alt="Boundless Creativity Icon" width="48" height="48">
+                    </div>
+                    <h3>Boundless Creativity</h3>
+                    <p>Unlike tools limited to specific glyph types or expression spaces, GlyphWeaver supports virtually unlimited creative freedom. Your creativity is the only limit.</p>
+                </div>
+                <div class="use-case-item">
+                    <div class="use-case-icon">
+                        <img src="public/grows.svg" alt="Design That Grows with Data Icon" width="48" height="48">
+                    </div>
+                    <h3>Design That Grows with Data</h3>
+                    <p>Create large-scale visualizations that update when your data changes. GlyphWeaver makes previously impossible data-driven designs not just possible, but easy.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section (Bento Grid) -->
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-subheading">Key Features</div>
+            <h2 class="section-title">Powerful Simplicity for Visual Creativity</h2>
+            <div class="bento-grid">
+                <div class="bento-item bento-large">
+                    <div class="bento-content">
+                        <h3>Glyph Domain-Specific Language (GDSL)</h3>
+                        <p>GlyphWeaver's hierarchical container model provides a mathematically rigorous foundation for creating complex glyph representations while maintaining simplicity at each level.</p>
+                    </div>
+                    <div class="bento-image">
+                        <img src="public/feature1.png" alt="Glyph Domain-Specific Language (GDSL)">
+                    </div>
+                </div>
+                <div class="bento-item">
+                    <div class="bento-content">
+                        <h3>Multimodal Interaction</h3>
+                        <p>Our AI translates human inputs into executable operations by building the cross-modal transformations between visuals, natural language, direct manipulation, GDSL, and code.</p>
+                    </div>
+                    <!-- <div class="bento-image">
+                        <img src="https://via.placeholder.com/200x150" alt="placeholder">
+                    </div> -->
+                </div>
+                <div class="bento-item">
+                    <div class="bento-content">
+                        <h3>Intelligent Pattern Recognition</h3>
+                        <p>The system automatically recognizes patterns in your designs, such as repetition and spatial relationships, making it easy to create and modify complex visualizations.</p>
+                    </div>
+                    <!-- <div class="bento-image">
+                        <img src="https://via.placeholder.com/200x150" alt="placeholder">
+                    </div> -->
+                </div>
+                <div class="bento-item">
+                    <div class="bento-content">
+                        <h3>Effortless Data Binding</h3>
+                        <p>Bind data to visual attributes while maintaining creative freedom. GlyphWeaver handles the technical complexities of data standardization and mapping, enabling designers to create sophisticated data-driven glyphs.</p>
+                    </div>
+                    <!-- <div class="bento-image">
+                        <img src="https://via.placeholder.com/200x150" alt="placeholder">
+                    </div> -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section (Maintaining Original Functionality) -->
+    <section id="gallery" class="gallery-section">
+        <div class="container">
+            <div class="section-subheading">Gallery</div>
+            <h2 class="section-title">Explore our visualization examples and patterns</h2>
+            <p class="section-description">Browse through our collection of glyph visualization examples created with GlyphWeaver.</p>
+            <div class="gallery-container" id="gallery-container">
+                <!-- Gallery items will be dynamically inserted here -->
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2023 GlyphWeaver. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Handle dark mode toggle
+        const darkModeToggle = document.getElementById("dark-mode-toggle");
+        const mobileDarkModeToggle = document.getElementById("mobile-dark-mode-toggle");
+        const iconElement = darkModeToggle.querySelector(".icon");
+        const mobileIconElement = mobileDarkModeToggle.querySelector(".toggle-icon");
+
+        // Read local storage and set mode
+        if (localStorage.getItem("dark-mode") === "enabled") {
+            document.body.classList.add("dark-mode");
+            iconElement.textContent = "🌙";
+            mobileIconElement.textContent = "🌙";
+        }
+
+        // Toggle dark mode - desktop
+        darkModeToggle.addEventListener("click", toggleDarkMode);
+        
+        // Toggle dark mode - mobile
+        mobileDarkModeToggle.addEventListener("click", toggleDarkMode);
+        
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
+
+            if (document.body.classList.contains("dark-mode")) {
+                localStorage.setItem("dark-mode", "enabled");
+                iconElement.textContent = "🌙";
+                mobileIconElement.textContent = "🌙";
+            } else {
+                localStorage.removeItem("dark-mode");
+                iconElement.textContent = "☀️";
+                mobileIconElement.textContent = "☀️";
+            }
+        }
+        
+        // Handle hamburger menu
+        const hamburgerButton = document.querySelector('.hamburger-menu');
+        const mobileMenu = document.querySelector('.mobile-menu');
+        
+        hamburgerButton.addEventListener('click', () => {
+            hamburgerButton.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            document.body.classList.toggle('menu-open');
+        });
+        
+        // Close menu when clicking on mobile links
+        const mobileLinks = document.querySelectorAll('.mobile-nav a');
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                hamburgerButton.classList.remove('active');
+                mobileMenu.classList.remove('active');
+                document.body.classList.remove('menu-open');
+            });
+        });
+
+        // Gallery functionality
+        const gallery = document.getElementById('gallery-container');
+
+        // First load example file list
+        fetch('dsl_setting/all_example_list.txt')
+            .then(response => response.text())
+            .then(text => {
+                // Get file list and filter empty lines
+                const exampleFiles = text.split('\n').filter(line => line.trim());
+
+                console.log("exampleFiles", exampleFiles);
+
+                // Render example files
+                exampleFiles.forEach(file => {
+                    const item = document.createElement('div');
+                    item.className = 'gallery-item';
+
+                    const previewId = `preview-${file.replace('.json', '')}`;
+
+                    item.innerHTML = `
+                    <div class="theme-switch"></div>
+                    <div class="preview">
+                        <div id="${previewId}"></div>
+                    </div>
+                    <div class="item-info">
+                        <h2 class="item-title">${file
+                            .replace('.json', '')
+                            .replace(/_/g, ' ')
+                            .split(' ')
+                            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                            .join(' ')}
+                        </h2>
+                        <a href="dsl_renderer.html?file=${file}&type=setting" class="view-button">View Pattern</a>
+                    </div>
+                `;
+
+                    gallery.appendChild(item);
+
+                    // Add dark mode toggle
+                    const themeSwitch = item.querySelector('.theme-switch');
+                    themeSwitch.addEventListener('click', () => {
+                        item.classList.toggle('dark-mode');
+                    });
+
+                    // Load and render example file
+                    fetch('dsl_setting/' + file)
+                        .then(response => response.json())
+                        .then(data => {
+                            const pattern = new PatternGenerator(previewId);
+                            pattern.generateFromJSON(data.dsl);
+
+                            // Add defs
+                            if (data.defs_string) {
+                                const svgElement = document.querySelector(`#${previewId} svg`);
+                                if (svgElement) {
+                                    const defsElement = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+                                    defsElement.innerHTML = data.defs_string;
+                                    svgElement.insertBefore(defsElement, svgElement.firstChild);
+                                }
+                            }
+
+                            if (data.backgound_color) {
+                                let container = document.querySelector(`#${previewId}`)
+                                container.style.backgroundColor = data.backgound_color
+                            }
+
+                            // Adjust SVG view
+                            const svgElement = document.querySelector(`#${previewId} svg`);
+                            if (svgElement) {
+                                const bbox = svgElement.getBBox();
+                                svgElement.setAttribute('viewBox',
+                                    `${bbox.x - 10} ${bbox.y - 10} ${bbox.width + 20} ${bbox.height + 20}`);
+                                svgElement.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+                            }
+                        })
+                        .catch(error => console.error(`Error rendering ${file}:`, error));
+                });
+
+                // Then render original file list
+                const files = []
+                
+                //[
+                //    'snow_source_unify.json',
+                //    'example.json',
+                //    'flower.json',
+                //    'multi_snow_dict.json',
+                //    'multi_snow.json',
+                //    'snow.json',
+                //    'prototype_snow.json',
+                //    'heatmap.json',
+                //    'multi_flower.json'
+                //];
+
+                files.forEach(file => {
+                    const item = document.createElement('div');
+                    item.className = 'gallery-item';
+
+                    const previewId = `preview-${file.replace('.json', '')}`;
+
+                    item.innerHTML = `
+                    <div class="theme-switch"></div>
+                    <div class="preview">
+                        <div id="${previewId}"></div>
+                    </div>
+                    <div class="item-info">
+                        <h2 class="item-title">${file
+                            .replace('.json', '')
+                            .replace(/_/g, ' ')
+                            .split(' ')
+                            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                            .join(' ')}
+                        </h2>
+                        <a href="dsl_renderer.html?file=${file}" class="view-button">View Pattern</a>
+                    </div>
+                `;
+
+                    gallery.appendChild(item);
+
+                    const themeSwitch = item.querySelector('.theme-switch');
+                    themeSwitch.addEventListener('click', () => {
+                        item.classList.toggle('dark-mode');
+                    });
+
+                    // Load and render original file
+                    fetch('dsl_json/' + file)
+                        .then(response => response.json())
+                        .then(data => {
+                            const pattern = new PatternGenerator(previewId);
+                            pattern.generateFromJSON(data);
+
+                            const svgElement = document.querySelector(`#${previewId} svg`);
+                            if (svgElement) {
+                                const bbox = svgElement.getBBox();
+                                svgElement.setAttribute('viewBox',
+                                    `${bbox.x - 10} ${bbox.y - 10} ${bbox.width + 20} ${bbox.height + 20}`);
+                                svgElement.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+                            }
+                        })
+                        .catch(error => console.error(`Error rendering ${file}:`, error));
+                });
+            })
+            .catch(error => console.error('Error loading example list:', error));
+    </script>
+</body>
+
+</html>
