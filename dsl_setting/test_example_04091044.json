@@ -1,0 +1,158 @@
+{
+    "dsl": {
+        "encoded_data": {
+            "combine_0": [
+                {
+                    "text_content": "Alabama"
+                },
+                {
+                    "text_content": "Alaska"
+                },
+                {
+                    "text_content": "Arizona"
+                },
+                {
+                    "text_content": "Arkansas"
+                },
+                {
+                    "text_content": "California"
+                },
+                {
+                    "text_content": "Colorado"
+                },
+                {
+                    "text_content": "Connecticut"
+                },
+                {
+                    "text_content": "Delaware"
+                }
+            ]
+        },
+        "id": "DSL_0409_104431",
+        "relation": [],
+        "type": "combine",
+        "units": [
+            {
+                "data_function": {},
+                "id": "(DSL_0331_201153)",
+                "origin_point": {
+                    "x": 0,
+                    "y": 0
+                },
+                "source": {
+                    "coordinate_system": "cartesian",
+                    "interval_x": 800,
+                    "interval_y": 0,
+                    "repeat_count": 4,
+                    "repeat_rule": "even",
+                    "type": "repeat"
+                },
+                "type": "repeat",
+                "units": [
+                    {
+                        "data_function": {
+                            "text_content": "value['text_content']"
+                        },
+                        "id": "Louisiana",
+                        "origin_point": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "source": {
+                            "fill": "black",
+                            "font-family": "Gloock",
+                            "font-size": "64",
+                            "id": "Louisiana",
+                            "letter-spacing": "1.09212px",
+                            "style": "white-space: pre",
+                            "text_content": "Louisiana",
+                            "tspan_content": "Louisiana",
+                            "type": "TEXT",
+                            "x": "11.013",
+                            "xml:space": "preserve",
+                            "xmlns": "http://www.w3.org/2000/svg",
+                            "y": "551.5"
+                        },
+                        "type": "single"
+                    },
+                    {
+                        "data_function": {},
+                        "id": "1.05-2.46",
+                        "origin_point": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "source": {
+                            "fill": "black",
+                            "font-family": "Geist Mono",
+                            "font-size": "36",
+                            "id": "1.05-2.46",
+                            "letter-spacing": "1.09212px",
+                            "style": "white-space: pre",
+                            "text_content": "1.05-2.46",
+                            "tspan_content": "1.05-2.46",
+                            "type": "TEXT",
+                            "x": "102.99",
+                            "xml:space": "preserve",
+                            "xmlns": "http://www.w3.org/2000/svg",
+                            "y": "625.28"
+                        },
+                        "type": "single"
+                    },
+                    {
+                        "id": "DSL_RENDERED_INSTANCE_0331194615",
+                        "origin_point": {
+                            "x": -361.54,
+                            "y": -585.23
+                        },
+                        "relation": [],
+                        "type": "combine",
+                        "units": [
+                            {
+                                "data_function": {},
+                                "id": "(DSL_0331_194220)",
+                                "origin_point": {
+                                    "x": 0,
+                                    "y": 0
+                                },
+                                "source": {
+                                    "coordinate_system": "polar",
+                                    "relative_base": {
+                                        "x": 0,
+                                        "y": 0
+                                    },
+                                    "repeat_count": 8,
+                                    "repeat_rule": "even",
+                                    "theta": 24,
+                                    "type": "repeat"
+                                },
+                                "type": "repeat",
+                                "units": [
+                                    {
+                                        "data_function": {
+                                            "scale": "1.2 + (0.5 - 1.2) * index / (total_count - 1) + (random() - 0.5) / 2"
+                                        },
+                                        "id": "Vector 167",
+                                        "origin_point": {
+                                            "x": 20.54,
+                                            "y": 438.23
+                                        },
+                                        "source": {
+                                            "fill": "#4cd8ac",
+                                            "id": "Vector 167",
+                                            "path_d": "M19.3804 444.294C-41.5 282 70.5785 171.794 22.1888 -0.000415712C87.4999 185 -19.4215 224.794 19.3804 444.294Z",
+                                            "type": "PATH"
+                                        },
+                                        "type": "single"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "defs_string": "",
+    "background_color": "rgba(251, 250, 224, 1)"
+}

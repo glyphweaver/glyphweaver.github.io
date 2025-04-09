@@ -1,0 +1,183 @@
+{
+    "dsl": {
+        "encoded_data": {
+            "combine_0": [
+                {
+                    "scale_y": 1
+                },
+                {
+                    "scale_y": 0.88
+                },
+                {
+                    "scale_y": 1.25
+                },
+                {
+                    "scale_y": 0.96
+                },
+                {
+                    "scale_y": 0.71
+                },
+                {
+                    "scale_y": 1.07
+                },
+                {
+                    "scale_y": 1.26
+                },
+                {
+                    "scale_y": 0.82
+                },
+                {
+                    "scale_y": 1.13
+                },
+                {
+                    "scale_y": 0.87
+                },
+                {
+                    "scale_y": 1
+                },
+                {
+                    "scale_y": 1
+                },
+                {
+                    "scale_y": 1
+                },
+                {
+                    "scale_y": 1
+                },
+                {
+                    "scale_y": 1
+                },
+                {
+                    "scale_y": 1
+                },
+                {
+                    "scale_y": 1
+                },
+                {
+                    "scale_y": 1
+                },
+                {
+                    "scale_y": 1
+                },
+                {
+                    "scale_y": 1
+                }
+            ]
+        },
+        "id": "DSL_0409_103546",
+        "relation": [],
+        "type": "combine",
+        "units": [
+            {
+                "data_function": {},
+                "id": "(Vector 141)",
+                "origin_point": {
+                    "x": 0,
+                    "y": 0
+                },
+                "relation": [
+                    {
+                        "source_id": "DSL_0331_221736",
+                        "stick_to": {
+                            "distance": {
+                                "x": 0,
+                                "y": 0
+                            },
+                            "point": "top"
+                        },
+                        "target_id": "Vector 141"
+                    }
+                ],
+                "source": {
+                    "coordinate_system": "cartesian",
+                    "interval_x": 504.85,
+                    "interval_y": 0,
+                    "repeat_count": 20,
+                    "repeat_rule": "non_uniform_scale",
+                    "scale_begin": 1,
+                    "scale_center": true,
+                    "scale_direction": "x",
+                    "scale_interval": 0,
+                    "type": "repeat"
+                },
+                "type": "repeat",
+                "units": [
+                    {
+                        "data_function": {
+                            "scale_x": "0.2 + Math.random() * (1.4 - 0.5)",
+                            "scale_y": "(index / total_count + random()  + 0.2) / 2"
+                        },
+                        "id": "Vector 141",
+                        "origin_point": {
+                            "x": 0,
+                            "y": 7474.66
+                        },
+                        "source": {
+                            "id": "Vector 141",
+                            "path_d": "M24 7508.35C24 3803.51 1657.32 4283.49 1657.32 1546.1",
+                            "stroke": "#181818",
+                            "stroke-linecap": "round",
+                            "stroke-width": "18",
+                            "type": "PATH"
+                        },
+                        "type": "single"
+                    },
+                    {
+                        "data_function": {
+                            "scale": "Math.random() * 0.3 + 0.05"
+                        },
+                        "description": "red flower",
+                        "id": "DSL_0331_221736",
+                        "origin_point": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "relation": [],
+                        "type": "combine",
+                        "units": [
+                            {
+                                "data_function": {},
+                                "id": "(DSL_0331_221736)",
+                                "origin_point": {
+                                    "x": 0,
+                                    "y": 0
+                                },
+                                "source": {
+                                    "coordinate_system": "polar",
+                                    "relative_base": {
+                                        "x": -2034.03,
+                                        "y": -1010.66
+                                    },
+                                    "repeat_count": 4,
+                                    "repeat_rule": "even",
+                                    "theta": 90,
+                                    "type": "repeat"
+                                },
+                                "type": "repeat",
+                                "units": [
+                                    {
+                                        "data_function": {},
+                                        "id": "Vector",
+                                        "origin_point": {
+                                            "x": 0,
+                                            "y": 0
+                                        },
+                                        "source": {
+                                            "fill": "#E30613",
+                                            "id": "Vector",
+                                            "path_d": "M0 1002.46C0 1554.95 448.543 2002.92 1000.46 2002.92H1012.14C1014.42 2002.92 1015.27 2002.92 1017.84 2002.35C1044.04 2000.36 1065.96 1982.42 1071.66 1957.92C1071.66 1949.67 1072.52 1943.97 1072.52 1939.13C1104.41 1438.47 1501.41 1038.91 2001.21 1005.02V1002.74V999.609C1501.41 964.011 1104.41 564.737 1072.52 66.0711C1072.52 63.508 1073.94 62.084 1073.94 60.3753C1073.94 56.1035 1072.52 51.8316 1071.66 47.275C1065.68 21.3592 1043.75 4.27185 1017.84 1.70875H1012.14C1007.01 1.70875 1005.3 0 1000.46 0C448.543 0.284789 0 449.112 0 1002.46Z",
+                                            "type": "PATH"
+                                        },
+                                        "type": "single"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "defs_string": "",
+    "background_color": "rgba(255, 255, 255, 1)"
+}

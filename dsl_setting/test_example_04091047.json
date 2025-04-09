@@ -1,0 +1,224 @@
+{
+    "dsl": {
+        "encoded_data": {
+            "combine_0": [
+                {
+                    "scale_y": 1
+                },
+                {
+                    "scale_y": 0.71
+                },
+                {
+                    "scale_y": 0.48
+                },
+                {
+                    "scale_y": 0.48
+                },
+                {
+                    "scale_y": 1
+                },
+                {
+                    "scale_y": 1
+                },
+                {
+                    "scale_y": 1
+                },
+                {
+                    "scale_y": 1
+                }
+            ]
+        },
+        "id": "DSL_0409_104756",
+        "relation": [],
+        "type": "combine",
+        "units": [
+            {
+                "data_function": {},
+                "id": "(Vector 166)",
+                "origin_point": {
+                    "x": 0,
+                    "y": 0
+                },
+                "relation": [
+                    {
+                        "source_id": "DSL_0331_175051",
+                        "stick_to": {
+                            "distance": {
+                                "x": 0,
+                                "y": 0
+                            },
+                            "point": "top"
+                        },
+                        "target_id": "Vector 166"
+                    },
+                    {
+                        "source_id": "Mexico",
+                        "stick_to": {
+                            "distance": {
+                                "x": 0,
+                                "y": 90
+                            },
+                            "point": "top"
+                        },
+                        "target_id": "Vector 166"
+                    }
+                ],
+                "source": {
+                    "coordinate_system": "cartesian",
+                    "interval_x": 115.2,
+                    "interval_y": -1.72,
+                    "repeat_count": 8,
+                    "repeat_rule": "non_uniform_scale",
+                    "scale_begin": 1,
+                    "scale_center": true,
+                    "scale_direction": "x",
+                    "scale_interval": 0,
+                    "type": "repeat"
+                },
+                "type": "repeat",
+                "units": [
+                    {
+                        "data_function": {
+                            "scale_x": "scale_begin + index * scale_interval",
+                            "scale_y": "Math.random()  / 2 + 0.3"
+                        },
+                        "description": "green line",
+                        "id": "Vector 166",
+                        "origin_point": {
+                            "x": 0,
+                            "y": 654.11
+                        },
+                        "source": {
+                            "id": "Vector 166",
+                            "path_d": "M1 0V646.5",
+                            "stroke": "#A4CABB",
+                            "stroke-width": "2",
+                            "type": "PATH"
+                        },
+                        "type": "single"
+                    },
+                    {
+                        "description": "colorful flower",
+                        "encoded_data": {
+                            "combine_0": [
+                                {
+                                    "fill": "#797979"
+                                },
+                                {
+                                    "fill": "#E88767"
+                                },
+                                {
+                                    "fill": "#8D5B8C"
+                                },
+                                {
+                                    "fill": "#DBA922"
+                                },
+                                {
+                                    "fill": "#30A557"
+                                },
+                                {
+                                    "fill": "#7FA943"
+                                },
+                                {
+                                    "fill": "#CC475C"
+                                },
+                                {
+                                    "fill": "#247EBF"
+                                },
+                                {
+                                    "fill": "#2CA2E0"
+                                },
+                                {
+                                    "fill": "#3CA594"
+                                },
+                                {
+                                    "fill": "#A84F51"
+                                }
+                            ]
+                        },
+                        "id": "DSL_0331_175051",
+                        "origin_point": {
+                            "x": -0.88,
+                            "y": 0
+                        },
+                        "relation": [],
+                        "type": "combine",
+                        "units": [
+                            {
+                                "data_function": {},
+                                "id": "(DSL_0331_175051)",
+                                "origin_point": {
+                                    "x": 0,
+                                    "y": 0
+                                },
+                                "source": {
+                                    "coordinate_system": "polar",
+                                    "relative_base": {
+                                        "x": 0,
+                                        "y": 0
+                                    },
+                                    "repeat_count": 11,
+                                    "repeat_rule": "even",
+                                    "theta": 32.72,
+                                    "type": "repeat"
+                                },
+                                "type": "repeat",
+                                "units": [
+                                    {
+                                        "data_function": {
+                                            "fill": "value['fill']",
+                                            "scale": "Math.random() * (1.2 - 0.5) + 0.5"
+                                        },
+                                        "id": "Vector 165",
+                                        "origin_point": {
+                                            "x": 0.88,
+                                            "y": 71.58
+                                        },
+                                        "source": {
+                                            "fill": "#63b1a4",
+                                            "id": "Vector 165",
+                                            "path_d": "M1 71.2005C1 71.2005 64.5 -11.7994 78.5 2.7004C92.5 17.2002 1 71.2005 1 71.2005Z",
+                                            "stroke": "#737373",
+                                            "stroke-width": 2,
+                                            "type": "PATH"
+                                        },
+                                        "type": "single"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "data_function": {
+                            "text_content": "['India', 'Canada', 'England', 'Australia', 'Japan', 'Germany', 'France', 'Brazil'][index]"
+                        },
+                        "id": "Mexico",
+                        "origin_point": {
+                            "x": 15.34,
+                            "y": -3.47
+                        },
+                        "source": {
+                            "fill": "#000000",
+                            "font-family": "Iowan Old Style",
+                            "font-size": "28",
+                            "id": "Mexico",
+                            "letter-spacing": "1.09212px",
+                            "style": "white-space: pre",
+                            "text_content": "Mexico",
+                            "transform": "translate(-11 108) rotate(-90)",
+                            "tspan_content": "Mexico",
+                            "type": "TEXT",
+                            "x": "0",
+                            "xml:space": "preserve",
+                            "xmlns": "http://www.w3.org/2000/svg",
+                            "y": "35.3125"
+                        },
+                        "type": "single"
+                    }
+                ]
+            }
+        ]
+    },
+    "defs_string": "",
+    "background_color": "rgba(255, 255, 255, 1)"
+}
