@@ -169,6 +169,14 @@
         </div>
     </footer>
 
+    <!-- 添加模态弹窗 -->
+    <div id="pattern-modal" class="modal">
+      <div class="modal-content">
+          <span class="close-modal">&times;</span>
+          <iframe id="pattern-iframe" src="" frameborder="0"></iframe>
+      </div>
+    </div>
+
     <script>
         // Handle dark mode toggle
         const darkModeToggle = document.getElementById("dark-mode-toggle");
@@ -365,6 +373,44 @@
                 });
             })
             .catch(error => console.error('Error loading example list:', error));
+        
+        // 添加模态弹窗功能
+        const modal = document.getElementById('pattern-modal');
+        const iframe = document.getElementById('pattern-iframe');
+        const closeBtn = document.querySelector('.close-modal');
+
+        // 关闭模态窗口的函数
+        function closeModal() {
+            modal.style.display = 'none';
+            iframe.src = '';  // 清空 iframe 源以停止可能的视频/音频
+        }
+
+        // 点击关闭按钮时关闭模态窗口
+        closeBtn.addEventListener('click', closeModal);
+
+        // 点击模态窗口外部时关闭
+        window.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
+
+        // ESC 键关闭模态窗口
+        window.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && modal.style.display === 'block') {
+                closeModal();
+            }
+        });
+
+        // 为所有查看按钮添加事件委托
+        document.addEventListener('click', function(e) {
+            if (e.target && e.target.classList.contains('view-button')) {
+                e.preventDefault();
+                const url = e.target.getAttribute('href');
+                iframe.src = url;
+                modal.style.display = 'block';
+            }
+        });
     </script>
 </body>
 
