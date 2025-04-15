@@ -22,6 +22,7 @@ class PatternGenerator {
     this.downloadContainer.style.position = "absolute";
     this.downloadContainer.style.top = "10px";
     this.downloadContainer.style.right = "10px";
+    this.downloadContainer.id = "download-container";
 
     this.container.appendChild(this.downloadContainer);
 
@@ -70,6 +71,8 @@ class PatternGenerator {
     button.style.borderRadius = "4px";
     button.style.cursor = "pointer";
     button.style.fontSize = "14px";
+    button.id = "download-button";
+    button.className = "render-button";
 
     button.addEventListener("mouseover", () => {
       button.style.backgroundColor = "#45a049";
