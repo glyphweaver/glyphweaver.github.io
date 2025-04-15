@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+
+    <title>Data Glyph Renderer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/json/json.min.js"></script>
+    <script src="js/DataExpander.js"></script>
+    <script src="js/DataManager.js"></script>
+    <script src="js/SVGRenderer.js"></script>
+    <script src="js/RelationProcessor.js"></script>
+    <script src="js/PatternGenerator.js"></script>
+    <link rel="stylesheet" href="css/dsl_renderer_style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="input-panel">
+            <div id="editor"></div>
+            <div id="error-message" class="error-message"></div>
+        </div>
+        <div class="output-panel">
+            <div id="svg-container"></div>
+        </div>
+    </div>
+
+    <script>
+        // 文件列表
+        const files = [
+            'flower_route.json',
+            'stick_example.json',
+            'rescale_x.json',
+            'data_flatten.json',
+            'two_color.json',
+            'test_combine.json',
+            'debug_combine.json',
+            '20250213_SVGcode.json',
+            'snow_source_unify.json',
+            'example.json',
+            'flower.json',
+            'multi_snow_dict.json',
+            'multi_snow.json',
+            'snow.json',
+            'prototype_snow.json',
+            'heatmap.json',
+            'multi_flower.json'
+        ];
+
+        // 添加获取文件路径的辅助函数
+        function getFilePath(fileName, type) {
+            // 根据type参数决定文件路径
+            return type === 'setting' ? 'dsl_setting/' + fileName : 'dsl_json/' + fileName;
+        }
+
+
+        function fitSvgToContent(svg = null) {
+            // 获取所有子元素的边界框
+            let selected_svg = svg
+            if (svg == null) {
+                selected_svg = document.querySelector('#svg-container')
+                    .querySelector('svg');
+            }
+            const bbox = selected_svg.getBBox();
+
+            // 设置viewBox以适应内容
+            selected_svg.setAttribute('viewBox', `${bbox.x} ${bbox.y} ${bbox.width} ${bbox.height}`);
+
+            // 设置实际尺寸
+            selected_svg.setAttribute('width', bbox.width);
+            selected_svg.setAttribute('height', bbox.height);
+
+            // 可选：添加一些padding
+            const padding = 10;
+            selected_svg.setAttribute('width', bbox.width + padding * 2);
+            selected_svg.setAttribute('height', bbox.height + padding * 2);
+        }
+
+
+        // 初始化编辑器
+        const editor = CodeMirror(document.getElementById('editor'), {
+            mode: "application/json",
+            theme: "neat",
+            lineNumbers: true,
+            matchBrackets: true,
+            indentUnit: 4,
+            autoCloseBrackets: true,
+            styleActiveLine: true
+        });
+
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // 默认加载文件
+        const defaultFile = getUrlParameter('file');
+        const typeParam = getUrlParameter('type');
+
+        console.log(defaultFile, typeParam);
+        const filePath = getFilePath(defaultFile, typeParam);
+
+        console.log(filePath);
+
+        function addDefsToSvg(svg, defsString) {
+            if (!defsString) return;
+
+            // 检查是否已存在defs元素
+            let defs = svg.querySelector('defs');
+            if (!defs) {
+                // 如果不存在，创建新的defs元素
+                defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+                // 将defs插入到SVG的开头
+                svg.insertBefore(defs, svg.firstChild);
+            }
+            // 设置defs的内容
+            defs.innerHTML = defsString;
+        }
+
+        fetch(filePath)
+            .then(response => response.text())
+            .then(text => {
+                const jsonData = JSON.parse(text);
+                render_loaded_json(jsonData);
+            })
+            .catch(error => {
+                document.getElementById('error-message').textContent =
+                    'Error loading example: ' + error.message;
+
+                console.log("load failed")
+                new_file_path = 'dsl_json/' + files[0]
+
+                fetch(new_file_path)
+                    .then(response => response.text())
+                    .then(text => {
+                        const jsonData = JSON.parse(text);
+                        render_loaded_json(jsonData);
+                    })
+
+            });
+
+        function render_loaded_json(jsonData) {
+            // 检查是否存在 dsl 字段
+            const contentToRender = jsonData.dsl || jsonData;
+            const formattedJson = JSON.stringify(contentToRender, null, 4);
+            editor.setValue(formattedJson);     
+            
+            let data = JSON.parse(editor.getValue());
+            window._current_data = data
+            // update_data_value(data);
+            editor.setValue(JSON.stringify(data, null, 4));
+
+            renderPattern();
+            // 调整下载按钮位置
+            adjustDownloadButtonPosition()
+
+            if (jsonData.defs_string) {
+                let selected_svg = document.querySelector('#svg-container svg');
+                addDefsToSvg(selected_svg, jsonData.defs_string);
+            }
+            if (jsonData.background_color) {
+                document.querySelector('#svg-container').style.backgroundColor = jsonData.background_color;
+            }
+        }
+        const pattern = new PatternGenerator('svg-container');
+
+        function update_data_value(data, target_id = "S_0_Polygon 9", data_key = 'fill'){
+
+            let data_path = findDataPathStr(data, target_id)
+            let unit = findUnitById(data, target_id = target_id)
+            if (unit.data_function){
+                unit.data_function[data_key] = `value['${data_key}']` // `value.${data_key}`;
+            }
+            console.log(`Data Path of ${target_id}:`, data_path);
+            let fill_data_path = "combine_0." + data_path + "." + data_key
+            console.log("fill_data_path", fill_data_path)
+            console.log('encoded_data', data.encoded_data)
+            setEncodedDataUsingValues(data.encoded_data, fill_data_path, [
+                "#0000FF",
+                "#FFFFff",
+            ]);
+            console.log(
+                "After Update ['#0000FF', '#FFFF00']",
+                getSimValuesFromEncoded(data.encoded_data, fill_data_path)
+            );
+
+        }
+
+        function renderPattern() {
+            const errorMessage = document.getElementById('error-message');
+            // try {
+            const data = JSON.parse(editor.getValue());
+            let formated_data = JSON.stringify(data, null, 4);
+            editor.setValue(formated_data);
+            errorMessage.textContent = '';
+            pattern.generateFromJSON(data, download = true);
+
+            let points = getPointsFromSVG(document.querySelector('#svg-container svg'));
+            console.log("All points", points);
+            console.log("All points", JSON.stringify(points))
+            fitSvgToContent();
+            // } catch (e) {
+            //     errorMessage.textContent = 'Invalid JSON: ' + e.message;
+            // }
+        }
+    </script>
+
+    <script>
+        
+
+
+
+
+        // 其他原有的脚本内容保持不变
+    </script>
+
+    <script src="js/DSLOperation.js"></script>
+
+    <script>
+      function adjustDownloadButtonPosition() {
+
+          // 将download按钮的位置调整到SVG容器的右上角
+          const inputPanel = document.querySelector(".input-panel");
+          // 清空原始设置的位置样式
+          const downloadButton = document.getElementById("download-button");
+          inputPanel.appendChild(downloadButton);
+
+          // 删除downloadContainer
+          const downloadContainer = document.getElementById("download-container");
+          downloadContainer.remove();
+
+      }
+      
+
+    </script>
+
+    <script>
+        // 使用示例：
+
+
+    </script>
+
+</body>
+
+</html>
