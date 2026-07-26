@@ -115,29 +115,53 @@ function setupCanvas(canvas) {
   return { ctx, w: rect.width, h: rect.height };
 }
 
-function drawPetal(ctx, x, y, angle, scale, color) {
+function drawPetal(ctx, x, y, angle, scale, color, pathData = null) {
   ctx.save(); ctx.translate(x, y); ctx.rotate(angle); ctx.scale(scale, scale);
-  ctx.fillStyle = color; ctx.beginPath(); ctx.moveTo(0, 0);
-  ctx.bezierCurveTo(0, -20, 26, -26, 47, 0); ctx.bezierCurveTo(28, 24, 4, 23, 0, 0); ctx.fill(); ctx.restore();
+  ctx.fillStyle = color;
+  if (pathData && typeof Path2D !== "undefined") {
+    ctx.scale(0.024, 0.024);
+    ctx.fill(new Path2D(pathData));
+  } else {
+    ctx.beginPath(); ctx.moveTo(0, 0);
+    ctx.bezierCurveTo(0, -20, 26, -26, 47, 0); ctx.bezierCurveTo(28, 24, 4, 23, 0, 0); ctx.fill();
+  }
+  ctx.restore();
 }
-function drawFlower(ctx, x, y, scale, color) {
-  for (let i = 0; i < 4; i++) drawPetal(ctx, x, y, i * Math.PI / 2, scale, color);
+function drawFlower(ctx, x, y, scale, color, pathData = null) {
+  for (let i = 0; i < 4; i++) drawPetal(ctx, x, y, i * Math.PI / 2, scale, color, pathData);
   ctx.fillStyle = "#f3c34d"; ctx.beginPath(); ctx.arc(x, y, 4 * scale, 0, Math.PI * 2); ctx.fill();
 }
 
-function renderScene(canvas, scene, view, accent) {
+function renderScene(canvas, scene, view, accent, geometry = {}) {
   const { ctx, w, h } = setupCanvas(canvas);
   ctx.fillStyle = "#eeece5"; ctx.fillRect(0, 0, w, h);
   const cx = w / 2, cy = h / 2;
   ctx.lineCap = "round";
   if (scene === "garden") {
     if (!view.stems) {
-      if (view.flower) drawFlower(ctx, cx, cy, Math.min(w,h)/180, accent);
-      else { drawPetal(ctx, cx - 45, cy, 0, Math.min(w,h)/220, accent); if (view.anchor) { ctx.fillStyle="#191a17"; ctx.beginPath(); ctx.arc(cx-45,cy,5,0,Math.PI*2);ctx.fill(); } }
+      if (view.flower) drawFlower(ctx, cx, cy, Math.min(w,h)/180, accent, geometry.petalPath);
+      else {
+        const px=geometry.petalPath?cx-84:cx-45, py=geometry.petalPath?cy-84:cy;
+        drawPetal(ctx,px,py,0,Math.min(w,h)/(geometry.petalPath?132:220),accent,geometry.petalPath);
+        if (view.anchor) { ctx.fillStyle="#191a17"; ctx.beginPath(); ctx.arc(px,py,5,0,Math.PI*2);ctx.fill(); }
+      }
     } else {
       const vals = [.7,1,.82,1.18,.9,1.1,.76,1.22,.95,1.08];
       const n = Math.min(view.count, 10), gap = Math.min(56, (w-80)/n), baseY = h*.77;
-      for(let i=0;i<n;i++){ const x=cx-(n-1)*gap/2+i*gap, ht=(view.data?vals[i]:1)*h*.31; ctx.strokeStyle="#252622";ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(x,baseY);ctx.bezierCurveTo(x,baseY-ht*.55,x+18,baseY-ht*.65,x+18,baseY-ht);ctx.stroke(); if(view.flowers)drawFlower(ctx,x+18,baseY-ht,.28,accent); }
+      for(let i=0;i<n;i++){
+        const x=cx-(n-1)*gap/2+i*gap, ht=(view.data?vals[i]:1)*h*.31;
+        let flowerX=x+18, flowerY=baseY-ht;
+        if (geometry.stemPath && typeof Path2D !== "undefined") {
+          const s=ht/5928.56;
+          ctx.save();ctx.translate(x,baseY);ctx.scale(s,s);ctx.translate(0,-7474.66);
+          ctx.strokeStyle=geometry.stemStroke||"#181818";ctx.lineWidth=Number(geometry.stemWidth)||18;
+          ctx.stroke(new Path2D(geometry.stemPath));ctx.restore();
+          flowerX=x+1633.32*s;flowerY=baseY-5928.56*s;
+        } else {
+          ctx.strokeStyle="#252622";ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(x,baseY);ctx.bezierCurveTo(x,baseY-ht*.55,x+18,baseY-ht*.65,x+18,baseY-ht);ctx.stroke();
+        }
+        if(view.flowers)drawFlower(ctx,flowerX,flowerY,.28,accent,geometry.petalPath);
+      }
     }
   } else if (scene === "blueFlower" || scene === "scores") {
     const n=view.count||1, vals=scene==="scores"?[.92,.74,.86,.61]:[1,.69,.69,.58,.79,.57,.94,.84,.6,.88,.67,.78];
@@ -238,6 +262,18 @@ async function openExample(ex) {
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const payload = await response.json();
     const finalDsl = payload.dsl || payload;
+    if (ex.id === "red-garden") {
+      const outer = finalDsl.units[0];
+      const flower = outer.units.find(unit => unit.type === "combine");
+      const stemUnit = outer.units.find(unit => unit.type === "single");
+      const petalUnit = flower?.units?.[0]?.units?.[0];
+      activeExample.geometry = {
+        petalPath: petalUnit?.source?.path_d,
+        stemPath: stemUnit?.source?.path_d,
+        stemStroke: stemUnit?.source?.stroke,
+        stemWidth: stemUnit?.source?.["stroke-width"]
+      };
+    }
     const derived = deriveFromPublishedDsl(ex, finalDsl);
     activeExample.steps.forEach((step, index) => { step.dsl = derived[index] || finalDsl; });
   } catch (error) {
@@ -288,7 +324,7 @@ async function openExample(ex) {
   requestAnimationFrame(()=>{
     container.querySelectorAll("canvas[data-step-index]").forEach(canvas=>{
       const index=Number(canvas.dataset.stepIndex);
-      renderScene(canvas,activeExample.scene,activeExample.steps[index].view,activeExample.accent);
+      renderScene(canvas,activeExample.scene,activeExample.steps[index].view,activeExample.accent,activeExample.geometry);
     });
     dialog.scrollTop=0;
   });
@@ -300,5 +336,5 @@ document.querySelectorAll(".filter").forEach(btn=>btn.addEventListener("click",(
 document.querySelector(".close-button").addEventListener("click",()=>dialog.close());
 dialog.addEventListener("close",()=>{document.body.style.overflow="";});
 document.getElementById("print-case").addEventListener("click",()=>window.print());
-window.addEventListener("resize",()=>{if(dialog.open)document.querySelectorAll("canvas[data-step-index]").forEach(canvas=>{const index=Number(canvas.dataset.stepIndex);renderScene(canvas,activeExample.scene,activeExample.steps[index].view,activeExample.accent);});});
+window.addEventListener("resize",()=>{if(dialog.open)document.querySelectorAll("canvas[data-step-index]").forEach(canvas=>{const index=Number(canvas.dataset.stepIndex);renderScene(canvas,activeExample.scene,activeExample.steps[index].view,activeExample.accent,activeExample.geometry);});});
 buildCards();
