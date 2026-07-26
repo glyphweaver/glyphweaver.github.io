@@ -19,6 +19,7 @@ const examples = [
     id: "red-garden", number: "01", title: "Red Flower Garden",
     summary: "From one imported petal to a nested, relational composition.",
     tags: ["repeat", "data", "compose"], accent: "#e1362d", scene: "garden",
+    originalDslFile: "dsl_setting/red_flower_garden.json", paperImage: "public/paper-cases/red-flower-garden.png",
     steps: [
       { title: "Import petal", actor: "USER", intent: "Load the red petal drawn in Figma into GlyphWeaver.", operation: "import_svg", change: "A single PATH unit enters the GDSL.", explanation: "The visual mark remains editable because its SVG geometry and origin are represented directly.", dsl: root("DSL_RED", [redPetal]), view: { count: 1 } },
       { title: "Set base point", actor: "USER", intent: "Move the base point to the end of the petal.", operation: "update_parameter(origin_point)", change: "Vector.origin_point → { x: 176, y: 90 }", explanation: "The base point makes the next rotation explicit and inspectable.", dsl: root("DSL_RED", [{ ...redPetal, origin_point: { x: 176, y: 90 } }]), view: { count: 1, anchor: true } },
@@ -29,9 +30,10 @@ const examples = [
     ]
   },
   {
-    id: "blue-flower", number: "02", title: "Blue Data Flower",
+    id: "blue-flower", number: "02", title: "Blue Flower",
     summary: "Infer a radial pattern, then bind twelve values to petal length.",
     tags: ["repeat", "data"], accent: "#405fc2", scene: "blueFlower",
+    originalDslFile: "dsl_setting/blue_flower.json", paperImage: "public/paper-cases/blue-flower-array.png",
     steps: [
       { title: "Draw petals", actor: "USER", intent: "Draw three blue petals around the same center.", operation: "import_svg", change: "Three RECT marks are observed.", explanation: "Repeated marks give the system evidence for a polar structure.", dsl: root("DSL_BLUE", [bluePetal]), view: { count: 3 } },
       { title: "Infer pattern", actor: "SYSTEM", intent: "A polar repeat is inferred from angle and shared base point.", operation: "infer_repeat(polar)", change: "Create repeat container; theta inferred as 30°.", explanation: "The inferred operation remains exposed for confirmation.", dsl: root("DSL_BLUE", [repeat("(petals)", "polar", 3, [bluePetal], { theta: 30, relative_base: { x: 0, y: 116 } })]), view: { count: 3 } },
@@ -40,25 +42,27 @@ const examples = [
     ]
   },
   {
-    id: "radial-score", number: "03", title: "Student Score Rosette",
-    summary: "Four named attributes mapped to four independently inspectable petals.",
-    tags: ["data", "compose"], accent: "#7d50b5", scene: "scores",
+    id: "better-life", number: "03", title: "Better Life Index",
+    summary: "A country glyph composed from eleven indicators, a stem, and a label.",
+    tags: ["data", "compose"], accent: "#7d50b5", scene: "blueFlower",
+    originalDslFile: "dsl_setting/better_life_index.json", paperImage: "public/paper-cases/better-life-index.png",
     steps: [
-      { title: "Import mark", actor: "USER", intent: "Use this rounded bar as a score petal.", operation: "import_svg", change: "Create one rounded RECT unit.", explanation: "The primitive is intentionally semantic-light: it is a mark before data is assigned.", dsl: root("SCORES", [single("score petal", { type: "RECT", width: 30, height: 120, rx: 15, fill: "#7d50b5" })]), view: { count: 1 } },
-      { title: "Repeat four", actor: "USER", intent: "Create four petals for math, physics, chemistry, and philosophy.", operation: "repeat_content(polar)", change: "repeat_count: 4; theta: 90°.", explanation: "One container corresponds to one student record.", dsl: root("SCORES", [repeat("(subjects)", "polar", 4, [single("score petal", { type: "RECT", width: 30, height: 120, rx: 15, fill: "#7d50b5" })], { theta: 90 })]), view: { count: 4 } },
-      { title: "Attach record", actor: "USER", intent: "Use the scores [92, 74, 86, 61].", operation: "bind_data", change: "encoded_data receives four normalized subject values.", explanation: "The array order matches the repeated petals and remains visible in GDSL.", dsl: root("SCORES", [{ ...repeat("(subjects)", "polar", 4, [{ ...single("score petal", { type: "RECT", width: 30, height: 120, rx: 15, fill: "#7d50b5" }), data_function: { scale_y: "value / 100" } }], { theta: 90 }), encoded_data: [92,74,86,61] }]), view: { count: 4, data: true } },
-      { title: "Add labels", actor: "USER", intent: "Label each subject outside its petal.", operation: "combine_dsl", change: "Add label unit with text from each data item.", explanation: "Labels and shapes coexist inside the same repeated container.", dsl: root("SCORES", [{ ...repeat("(subjects)", "polar", 4, [single("score petal", { type: "RECT", width: 30, height: 120, rx: 15, fill: "#7d50b5" }, { scale_y: "value.score / 100" }), single("label", { type: "TEXT", text: "value.subject", fill: "#191a17" })], { theta: 90 }), encoded_data: [{subject:"Math",score:92},{subject:"Physics",score:74},{subject:"Chemistry",score:86},{subject:"Philosophy",score:61}] }]), view: { count: 4, data: true, labels: true } }
+      { title: "Import petal", actor: "USER", intent: "Import one indicator petal from the source design.", operation: "import_svg", change: "Create the original Vector 165 PATH unit.", explanation: "The published SVG path is preserved as the leaf unit.", dsl: {}, view: { count: 1 } },
+      { title: "Build country glyph", actor: "USER", intent: "Repeat the petal for the eleven Better Life indicators.", operation: "repeat_content(polar)", change: "Create the published 11-petal polar container.", explanation: "One repeated container represents one country's indicator profile.", dsl: {}, view: { count: 11 } },
+      { title: "Repeat countries", actor: "USER", intent: "Repeat the country glyph for eight countries.", operation: "repeat_content(cartesian)", change: "Create the published 8-item Cartesian container.", explanation: "The country glyph, stem, and their relation are repeated together.", dsl: {}, view: { count: 8 } },
+      { title: "Bind data & labels", actor: "USER", intent: "Bind indicator colors and scales, then label each country.", operation: "bind_data + combine_dsl", change: "Restore the original data functions, relations, and labels.", explanation: "This state is the exact GDSL distributed with the website.", dsl: {}, view: { count: 8, data: true, labels: true } }
     ]
   },
   {
-    id: "phone-rates", number: "04", title: "Phone Rate Ladder",
+    id: "phone-rates", number: "04", title: "Phone Rates",
     summary: "A Cartesian repeat whose spacing, color, and scale are data-driven.",
-    tags: ["repeat", "data"], accent: "#e58c3d", scene: "bars",
+    tags: ["repeat", "data"], accent: "#42d7a8", scene: "bars",
+    originalDslFile: "dsl_setting/phone_rates.json", paperImage: "public/paper-cases/phone-rates.png",
     steps: [
-      { title: "Import phone", actor: "USER", intent: "Import the phone-shaped mark.", operation: "import_svg", change: "Create a single phone unit.", explanation: "Any SVG primitive can become the child of a repeat container.", dsl: root("PHONE", [single("phone", { type: "RECT", width: 42, height: 78, rx: 8, fill: "#e58c3d" })]), view: { count: 1 } },
-      { title: "Repeat cities", actor: "USER", intent: "Repeat it once for each of eight cities.", operation: "repeat_content(cartesian)", change: "Add repeat_count: 8; interval_x: 62.", explanation: "The repeat count is explicit and can be edited without regenerating code.", dsl: root("PHONE", [repeat("(cities)", "cartesian", 8, [single("phone", { type: "RECT", width: 42, height: 78, rx: 8, fill: "#e58c3d" })], { interval_x: 62, interval_y: 0 })]), view: { count: 8 } },
-      { title: "Map price", actor: "USER", intent: "Scale each phone by its monthly price.", operation: "update_parameter(data_function)", change: "phone.data_function.scale_y → value.price.", explanation: "The data expression is attached to the visual unit it controls.", dsl: root("PHONE", [{ ...repeat("(cities)", "cartesian", 8, [single("phone", { type: "RECT", width: 42, height: 78, rx: 8, fill: "#e58c3d" }, { scale_y: "value.price / 100" })], { interval_x: 62 }), encoded_data: [{price:42},{price:67},{price:51},{price:88},{price:72},{price:59},{price:96},{price:64}] }]), view: { count: 8, data: true } },
-      { title: "Color tiers", actor: "USER", intent: "Color plans above 75 red; keep the rest orange.", operation: "update_parameter(data_function)", change: "phone.data_function.fill → conditional expression.", explanation: "A second encoding is added without changing the repetition structure.", dsl: root("PHONE", [{ ...repeat("(cities)", "cartesian", 8, [single("phone", { type: "RECT", width: 42, height: 78, rx: 8 }, { scale_y: "value.price / 100", fill: "value.price > 75 ? '#e1362d' : '#e58c3d'" })], { interval_x: 62 }), encoded_data: [{price:42},{price:67},{price:51},{price:88},{price:72},{price:59},{price:96},{price:64}] }]), view: { count: 8, data: true, color: true } }
+      { title: "Import branch", actor: "USER", intent: "Import one branching rate mark.", operation: "import_svg", change: "Create the original Vector 167 PATH unit.", explanation: "The published path becomes the reusable leaf unit.", dsl: {}, view: { count: 1 } },
+      { title: "Build state glyph", actor: "USER", intent: "Repeat the branch radially to form one state glyph.", operation: "repeat_content(polar)", change: "Create the published 8-branch polar container.", explanation: "Branch scale is controlled inside the nested repeat.", dsl: {}, view: { count: 4 } },
+      { title: "Repeat states", actor: "USER", intent: "Repeat the glyph and add state and rate labels.", operation: "repeat_content(cartesian) + combine_dsl", change: "Create the published 4-item Cartesian container.", explanation: "Text and glyph units share the same repeated data context.", dsl: {}, view: { count: 4, data: true } },
+      { title: "Bind rate data", actor: "USER", intent: "Bind state names and the rate values to each glyph.", operation: "bind_data", change: "Restore the original encoded data and data functions.", explanation: "This state is the exact GDSL distributed with the website.", dsl: {}, view: { count: 4, data: true, color: true } }
     ]
   },
   {
@@ -157,16 +161,88 @@ function roundRect(ctx,x,y,w,h,r){const rr=Math.min(r,Math.abs(w)/2,Math.abs(h)/
 
 function buildCards(filter="all") {
   grid.innerHTML="";
-  examples.filter(ex=>filter==="all"||ex.tags.includes(filter)).forEach(ex=>{
+  examples.filter(ex=>ex.originalDslFile && (filter==="all"||ex.tags.includes(filter))).forEach(ex=>{
     const card=document.createElement("article"); card.className="case-card"; card.tabIndex=0;
-    card.innerHTML=`<div class="card-preview"><canvas></canvas><span class="case-number">${ex.number}</span></div><div class="card-content"><div class="card-meta">${ex.tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div><h3>${ex.title}</h3><p>${ex.summary}</p><div class="card-foot"><span>${ex.steps.length} inspectable steps</span><b>↗</b></div></div>`;
+    card.innerHTML=`<div class="card-preview"><img src="${ex.paperImage}" alt="${ex.title}, as published in the GlyphWeaver paper"></div><div class="card-content"><div class="card-meta"><span class="tag">case ${ex.number}</span>${ex.tags.map(t=>`<span class="tag">${t}</span>`).join("")}<span class="tag">paper figure</span></div><h3>${ex.title}</h3><p>${ex.summary}</p><div class="card-foot"><span>${ex.steps.length} derived states · original DSL</span><b>↗</b></div></div>`;
     const open=()=>openExample(ex); card.addEventListener("click",open); card.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();open();}});
-    grid.appendChild(card); requestAnimationFrame(()=>renderScene(card.querySelector("canvas"),ex.scene,ex.steps.at(-1).view,ex.accent));
+    grid.appendChild(card);
   });
 }
 
-function openExample(ex) {
-  activeExample=ex; activeStep=0;
+const copy = value => JSON.parse(JSON.stringify(value));
+const withoutDataFunctions = unit => {
+  const next = copy(unit);
+  if (next.data_function) next.data_function = {};
+  (next.units || []).forEach(child => Object.assign(child, withoutDataFunctions(child)));
+  return next;
+};
+const asRoot = (finalDsl, units, relation = []) => ({
+  id: finalDsl.id, type: "combine", origin_point: finalDsl.origin_point,
+  units: units.map(copy), relation: copy(relation)
+});
+
+function deriveFromPublishedDsl(example, finalDsl) {
+  const states = [];
+  const outer = finalDsl.units[0];
+  if (example.id === "blue-flower") {
+    const leaf = outer.units[0];
+    const inferred = copy(outer);
+    inferred.source.repeat_count = 3;
+    inferred.encoded_data = [];
+    inferred.units[0].data_function = {};
+    const twelve = copy(inferred);
+    twelve.source.repeat_count = 12;
+    states.push(asRoot(finalDsl, [leaf]), asRoot(finalDsl, [inferred]), asRoot(finalDsl, [twelve]), copy(finalDsl));
+  } else if (example.id === "red-garden") {
+    const flower = outer.units.find(unit => unit.type === "combine");
+    const curve = outer.units.find(unit => unit.type === "single");
+    const petal = flower.units[0].units[0];
+    const bareCurve = withoutDataFunctions(curve);
+    const repeatedBareCurve = copy(outer);
+    repeatedBareCurve.units = [bareCurve];
+    repeatedBareCurve.relation = [];
+    const repeatedEncodedCurve = copy(outer);
+    repeatedEncodedCurve.units = [curve];
+    repeatedEncodedCurve.relation = [];
+    states.push(
+      asRoot(finalDsl, [petal]),
+      asRoot(finalDsl, [petal]),
+      copy(flower),
+      asRoot(finalDsl, [repeatedBareCurve]),
+      asRoot(finalDsl, [repeatedEncodedCurve]),
+      copy(finalDsl)
+    );
+  } else if (example.id === "better-life") {
+    const flower = outer.units.find(unit => unit.type === "combine");
+    const stemUnit = outer.units.find(unit => unit.type === "single" && unit.source?.type === "PATH");
+    const petal = flower.units[0].units[0];
+    const repeated = copy(outer);
+    repeated.units = [withoutDataFunctions(stemUnit), withoutDataFunctions(flower)];
+    repeated.relation = copy(outer.relation || []);
+    states.push(asRoot(finalDsl, [petal]), copy(flower), asRoot(finalDsl, [repeated]), copy(finalDsl));
+  } else if (example.id === "phone-rates") {
+    const glyph = outer.units.find(unit => unit.type === "combine");
+    const branch = glyph.units[0].units[0];
+    const repeatedGlyph = copy(outer);
+    repeatedGlyph.units = [withoutDataFunctions(glyph)];
+    const withLabels = withoutDataFunctions(outer);
+    states.push(asRoot(finalDsl, [branch]), copy(glyph), asRoot(finalDsl, [withLabels]), copy(finalDsl));
+  }
+  return states;
+}
+
+async function openExample(ex) {
+  activeExample=copy(ex); activeStep=0;
+  try {
+    const response = await fetch(ex.originalDslFile);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const payload = await response.json();
+    const finalDsl = payload.dsl || payload;
+    const derived = deriveFromPublishedDsl(ex, finalDsl);
+    activeExample.steps.forEach((step, index) => { step.dsl = derived[index] || finalDsl; });
+  } catch (error) {
+    console.error("Could not load published DSL", error);
+  }
   document.getElementById("dialog-kicker").textContent=`Case ${ex.number} · ${ex.tags.join(" / ")}`;
   document.getElementById("dialog-title").textContent=ex.title;
   const strip=document.getElementById("step-strip"); strip.innerHTML="";
@@ -186,7 +262,18 @@ function showStep(index) {
   document.getElementById("step-count").textContent=`${index+1} / ${activeExample.steps.length}`;
   document.getElementById("previous-step").disabled=index===0;
   document.getElementById("next-step").disabled=index===activeExample.steps.length-1;
-  requestAnimationFrame(()=>renderScene(document.getElementById("render-canvas"),activeExample.scene,step.view,activeExample.accent));
+  const canvas = document.getElementById("render-canvas");
+  const paperResult = document.getElementById("paper-result");
+  const isPublishedFinal = index === activeExample.steps.length - 1;
+  paperResult.style.display = isPublishedFinal ? "block" : "none";
+  canvas.style.display = isPublishedFinal ? "none" : "block";
+  document.getElementById("render-status").textContent = isPublishedFinal ? "Published paper result" : "Derived intermediate preview";
+  if (isPublishedFinal) {
+    paperResult.src = activeExample.paperImage;
+    paperResult.alt = `${activeExample.title}, published result`;
+  } else {
+    requestAnimationFrame(()=>renderScene(canvas,activeExample.scene,step.view,activeExample.accent));
+  }
 }
 
 document.querySelectorAll(".filter").forEach(btn=>btn.addEventListener("click",()=>{
@@ -198,5 +285,5 @@ document.getElementById("previous-step").addEventListener("click",()=>{if(active
 document.getElementById("next-step").addEventListener("click",()=>{if(activeStep<activeExample.steps.length-1)showStep(activeStep+1);});
 document.getElementById("copy-code").addEventListener("click",async e=>{await navigator.clipboard.writeText(JSON.stringify(activeExample.steps[activeStep].dsl,null,2));e.target.textContent="Copied";setTimeout(()=>e.target.textContent="Copy",1200);});
 window.addEventListener("keydown",e=>{if(!dialog.open)return;if(e.key==="ArrowRight"&&activeStep<activeExample.steps.length-1)showStep(activeStep+1);if(e.key==="ArrowLeft"&&activeStep>0)showStep(activeStep-1);});
-window.addEventListener("resize",()=>{if(dialog.open)renderScene(document.getElementById("render-canvas"),activeExample.scene,activeExample.steps[activeStep].view,activeExample.accent);});
+window.addEventListener("resize",()=>{if(dialog.open && activeStep < activeExample.steps.length-1)renderScene(document.getElementById("render-canvas"),activeExample.scene,activeExample.steps[activeStep].view,activeExample.accent);});
 buildCards();

@@ -37,18 +37,9 @@ h1 em { font-family: Georgia, serif; font-weight: 400; color: var(--red); }
 .hero-actions { display: flex; align-items: center; gap: 22px; }
 .primary-button { padding: 15px 22px; color: white; background: var(--ink); border-radius: 4px; font-size: 13px; font-weight: 700; }
 .hero-note { font: 400 11px var(--mono); color: var(--muted); }
-.hero-visual { height: 390px; display: flex; align-items: center; justify-content: center; gap: 4%; background: var(--white); border: 1px solid var(--line); border-radius: 50% 50% 4px 4px; position: relative; }
-.hero-visual::after { content: "IMPORT · REPEAT · COMPOSE"; position: absolute; bottom: 22px; font: 10px var(--mono); letter-spacing: .14em; color: var(--muted); }
-.hero-stage { width: 25%; aspect-ratio: 1; display: grid; place-items: center; position: relative; }
-.hero-stage span { width: 54%; height: 27%; border-radius: 100% 4px 4px 100%; background: var(--red); transform-origin: 100% 50%; }
-.stage-two span { position: absolute; }
-.stage-two span:nth-child(2) { transform: rotate(90deg); }
-.stage-two span:nth-child(3) { transform: rotate(180deg); }
-.stage-two span:nth-child(4) { transform: rotate(270deg); }
-.stage-arrow { font: 16px var(--mono); color: var(--muted); }
-.stage-three { gap: 8px; align-content: center; }
-.stage-three i { width: 80%; height: 1px; background: var(--ink); position: relative; }
-.stage-three i::after { content: "✣"; position: absolute; right: -6px; top: -8px; color: var(--red); font-style: normal; }
+.hero-visual { min-height: 390px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fbfaf6; border: 1px solid var(--line); border-radius: 4px; padding: 28px; position: relative; }
+.hero-visual img { width: 100%; height: auto; display: block; }
+.hero-visual p { width: 100%; margin: 24px 0 0; padding-top: 14px; border-top: 1px solid var(--line); font: 9px var(--mono); letter-spacing: .08em; color: var(--muted); text-transform: uppercase; }
 
 .reading-guide { padding: 80px clamp(24px, 7vw, 112px); background: var(--ink); color: white; display: grid; grid-template-columns: .7fr 1.3fr; gap: 8vw; }
 .reading-guide .eyebrow { color: #aaa9a2; }
@@ -68,7 +59,8 @@ h1 em { font-family: Georgia, serif; font-weight: 400; color: var(--red); }
 .case-card { min-height: 410px; display: flex; flex-direction: column; border: 1px solid var(--line); background: var(--white); cursor: pointer; transition: transform .2s ease, box-shadow .2s ease; overflow: hidden; }
 .case-card:hover { transform: translateY(-5px); box-shadow: 0 18px 44px rgba(25,26,23,.08); }
 .card-preview { height: 235px; position: relative; background: #eeece5; }
-.card-preview canvas { width: 100%; height: 100%; display: block; }
+.card-preview canvas, .card-preview img { width: 100%; height: 100%; display: block; }
+.card-preview img { object-fit: contain; background: #fffefa; }
 .case-number { position: absolute; top: 16px; left: 16px; width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; background: var(--white); font: 10px var(--mono); }
 .card-content { flex: 1; padding: 22px; display: flex; flex-direction: column; }
 .card-meta { display: flex; gap: 6px; margin-bottom: 13px; }
@@ -96,7 +88,9 @@ dialog::backdrop { background: rgba(15,15,13,.8); }
 .render-panel, .evidence-panel { min-width: 0; min-height: 0; }
 .render-panel { padding: 22px 28px; border-right: 1px solid var(--line); display: grid; grid-template-rows: auto minmax(0,1fr) auto; background: #eceae3; }
 .panel-label { display: flex; justify-content: space-between; font: 9px var(--mono); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
-#render-canvas { width: 100%; height: 100%; min-height: 280px; }
+.render-stage { min-height: 280px; position: relative; overflow: hidden; }
+#render-canvas, #paper-result { width: 100%; height: 100%; position: absolute; inset: 0; }
+#paper-result { display: none; object-fit: contain; padding: 18px; }
 .change-summary { display: flex; gap: 12px; padding: 13px 15px; border: 1px solid var(--line); background: var(--white); }
 .change-icon { color: var(--red); font: 18px var(--mono); }
 .change-summary small { color: var(--muted); font: 9px var(--mono); text-transform: uppercase; }
