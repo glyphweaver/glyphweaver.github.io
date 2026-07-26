@@ -89,49 +89,16 @@
           <p class="dialog-kicker" id="dialog-kicker"></p>
           <h2 id="dialog-title"></h2>
         </div>
-        <button class="close-button" aria-label="Close walkthrough">×</button>
-      </header>
-
-      <div class="step-strip" id="step-strip" role="tablist" aria-label="Walkthrough steps"></div>
-
-      <div class="workspace">
-        <section class="render-panel" aria-labelledby="render-heading">
-          <div class="panel-label"><span id="render-heading">Rendered result</span><span id="render-status">Deterministic preview</span></div>
-          <div class="render-stage">
-            <canvas id="render-canvas" width="760" height="580"></canvas>
-            <img id="paper-result" alt="">
-          </div>
-          <div class="change-summary">
-            <span class="change-icon">Δ</span>
-            <div><small>Change from previous step</small><p id="change-text"></p></div>
-          </div>
-        </section>
-
-        <section class="evidence-panel">
-          <div class="intent-card">
-            <div class="actor" id="actor-label">USER</div>
-            <blockquote id="intent-text"></blockquote>
-            <div class="operation-row"><span>Resolved operation</span><code id="operation-code"></code></div>
-          </div>
-          <div class="code-card">
-            <div class="code-toolbar">
-              <div><span class="code-dot red"></span><span class="code-dot amber"></span><span class="code-dot green"></span></div>
-              <span>legacy-gdsl.json</span>
-              <button id="copy-code">Copy</button>
-            </div>
-            <pre><code id="dsl-code"></code></pre>
-          </div>
-        </section>
-      </div>
-
-      <footer class="dialog-footer">
-        <p id="step-explanation"></p>
-        <div class="step-controls">
-          <button id="previous-step">← Previous</button>
-          <span id="step-count"></span>
-          <button id="next-step">Next →</button>
+        <div class="dialog-actions">
+          <button class="print-button" id="print-case">Print / Save PDF</button>
+          <button class="close-button" aria-label="Close walkthrough">×</button>
         </div>
-      </footer>
+      </header>
+      <div class="print-intro">
+        <p>Complete construction trace</p>
+        <span>Every intermediate state is derived from the published legacy GDSL. Read from top to bottom.</span>
+      </div>
+      <div class="print-steps" id="print-steps"></div>
     </div>
   </dialog>
 

@@ -245,35 +245,53 @@ async function openExample(ex) {
   }
   document.getElementById("dialog-kicker").textContent=`Case ${ex.number} · ${ex.tags.join(" / ")}`;
   document.getElementById("dialog-title").textContent=ex.title;
-  const strip=document.getElementById("step-strip"); strip.innerHTML="";
-  ex.steps.forEach((step,i)=>{const btn=document.createElement("button");btn.className="step-tab";btn.role="tab";btn.innerHTML=`<span>STEP ${String(i+1).padStart(2,"0")}</span><strong>${step.title}</strong>`;btn.addEventListener("click",()=>showStep(i));strip.appendChild(btn);});
-  dialog.showModal(); document.body.style.overflow="hidden"; showStep(0);
-}
-function showStep(index) {
-  activeStep=index; const step=activeExample.steps[index];
-  document.querySelectorAll(".step-tab").forEach((el,i)=>{el.classList.toggle("is-active",i===index);el.setAttribute("aria-selected",i===index);});
-  document.querySelectorAll(".step-tab")[index]?.scrollIntoView({behavior:"smooth",block:"nearest",inline:"center"});
-  document.getElementById("actor-label").textContent=step.actor;
-  document.getElementById("intent-text").textContent=`“${step.intent}”`;
-  document.getElementById("operation-code").textContent=step.operation;
-  document.getElementById("dsl-code").innerHTML=syntaxHighlight(step.dsl);
-  document.getElementById("change-text").textContent=index===0?"Initial state — no previous mutation.":step.change;
-  document.getElementById("step-explanation").textContent=step.explanation;
-  document.getElementById("step-count").textContent=`${index+1} / ${activeExample.steps.length}`;
-  document.getElementById("previous-step").disabled=index===0;
-  document.getElementById("next-step").disabled=index===activeExample.steps.length-1;
-  const canvas = document.getElementById("render-canvas");
-  const paperResult = document.getElementById("paper-result");
-  const isPublishedFinal = index === activeExample.steps.length - 1;
-  paperResult.style.display = isPublishedFinal ? "block" : "none";
-  canvas.style.display = isPublishedFinal ? "none" : "block";
-  document.getElementById("render-status").textContent = isPublishedFinal ? "Published paper result" : "Derived intermediate preview";
-  if (isPublishedFinal) {
-    paperResult.src = activeExample.paperImage;
-    paperResult.alt = `${activeExample.title}, published result`;
-  } else {
-    requestAnimationFrame(()=>renderScene(canvas,activeExample.scene,step.view,activeExample.accent));
-  }
+  const container=document.getElementById("print-steps");
+  container.innerHTML=activeExample.steps.map((step,index)=>{
+    const isFinal=index===activeExample.steps.length-1;
+    const visual=isFinal
+      ? `<img class="step-paper-result" src="${activeExample.paperImage}" alt="${activeExample.title}, published result">`
+      : `<canvas class="step-render" data-step-index="${index}" width="760" height="580"></canvas>`;
+    return `<article class="print-step">
+      <header class="print-step-heading">
+        <span class="step-index">STEP ${String(index+1).padStart(2,"0")} / ${String(activeExample.steps.length).padStart(2,"0")}</span>
+        <h3>${step.title}</h3>
+        <code class="step-operation">${step.operation}</code>
+      </header>
+      <div class="print-step-body">
+        <section class="step-visual">
+          <div class="panel-label"><span>Rendered result</span><span>${isFinal?"Published paper result":"Derived intermediate preview"}</span></div>
+          ${visual}
+          <div class="change-summary">
+            <span class="change-icon">Δ</span>
+            <div><small>Change from previous step</small><p>${index===0?"Initial state — no previous mutation.":step.change}</p></div>
+          </div>
+        </section>
+        <section class="step-evidence">
+          <div class="intent-card">
+            <div class="actor">${step.actor}</div>
+            <blockquote>“${step.intent}”</blockquote>
+            <p class="step-explanation">${step.explanation}</p>
+          </div>
+          <div class="code-card">
+            <div class="code-toolbar">
+              <div><span class="code-dot red"></span><span class="code-dot amber"></span><span class="code-dot green"></span></div>
+              <span>legacy-gdsl.json</span>
+            </div>
+            <pre><code>${syntaxHighlight(step.dsl)}</code></pre>
+          </div>
+        </section>
+      </div>
+    </article>`;
+  }).join("");
+  dialog.showModal();
+  document.body.style.overflow="hidden";
+  requestAnimationFrame(()=>{
+    container.querySelectorAll("canvas[data-step-index]").forEach(canvas=>{
+      const index=Number(canvas.dataset.stepIndex);
+      renderScene(canvas,activeExample.scene,activeExample.steps[index].view,activeExample.accent);
+    });
+    dialog.scrollTop=0;
+  });
 }
 
 document.querySelectorAll(".filter").forEach(btn=>btn.addEventListener("click",()=>{
@@ -281,9 +299,6 @@ document.querySelectorAll(".filter").forEach(btn=>btn.addEventListener("click",(
 }));
 document.querySelector(".close-button").addEventListener("click",()=>dialog.close());
 dialog.addEventListener("close",()=>{document.body.style.overflow="";});
-document.getElementById("previous-step").addEventListener("click",()=>{if(activeStep>0)showStep(activeStep-1);});
-document.getElementById("next-step").addEventListener("click",()=>{if(activeStep<activeExample.steps.length-1)showStep(activeStep+1);});
-document.getElementById("copy-code").addEventListener("click",async e=>{await navigator.clipboard.writeText(JSON.stringify(activeExample.steps[activeStep].dsl,null,2));e.target.textContent="Copied";setTimeout(()=>e.target.textContent="Copy",1200);});
-window.addEventListener("keydown",e=>{if(!dialog.open)return;if(e.key==="ArrowRight"&&activeStep<activeExample.steps.length-1)showStep(activeStep+1);if(e.key==="ArrowLeft"&&activeStep>0)showStep(activeStep-1);});
-window.addEventListener("resize",()=>{if(dialog.open && activeStep < activeExample.steps.length-1)renderScene(document.getElementById("render-canvas"),activeExample.scene,activeExample.steps[activeStep].view,activeExample.accent);});
+document.getElementById("print-case").addEventListener("click",()=>window.print());
+window.addEventListener("resize",()=>{if(dialog.open)document.querySelectorAll("canvas[data-step-index]").forEach(canvas=>{const index=Number(canvas.dataset.stepIndex);renderScene(canvas,activeExample.scene,activeExample.steps[index].view,activeExample.accent);});});
 buildCards();
