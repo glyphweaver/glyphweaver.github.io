@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Step-by-step, reproducible GlyphWeaver examples with user input, legacy GDSL, diffs, and rendered output.">
+  <meta property="og:title" content="GlyphWeaver — Process Gallery">
+  <meta property="og:description" content="Follow every intent, legacy GDSL mutation, and rendered intermediate state.">
+  <meta property="og:image" content="https://glyphweaver.github.io/public/process-gallery-og.png">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://glyphweaver.github.io/process-gallery.html">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://glyphweaver.github.io/public/process-gallery-og.png">
+  <title>GlyphWeaver — Process Gallery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/process-gallery.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="GlyphWeaver home">
+      <span class="brand-mark" aria-hidden="true">✣</span>
+      <span>GlyphWeaver</span>
+    </a>
+    <nav aria-label="Main navigation">
+      <a href="#gallery">Examples</a>
+      <a href="#reading-guide">How to read</a>
+      <a class="nav-home" href="index.html">Project home ↗</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">A reproducible view of the legacy GDSL</p>
+        <h1>See a glyph become<br><em>computable.</em></h1>
+        <p class="hero-description">Not just finished pictures. Follow every intent, operation, GDSL mutation, and rendered result—from one imported mark to a data-driven composition.</p>
+        <div class="hero-actions">
+          <a class="primary-button" href="#gallery">Explore 6 walkthroughs</a>
+          <span class="hero-note">30 inspectable states · deterministic output</span>
+        </div>
+      </div>
+      <div class="hero-visual" aria-label="A sequence showing a petal becoming a flower and then a garden">
+        <div class="hero-stage stage-one"><span></span></div>
+        <div class="stage-arrow">→</div>
+        <div class="hero-stage stage-two"><span></span><span></span><span></span><span></span></div>
+        <div class="stage-arrow">→</div>
+        <div class="hero-stage stage-three">
+          <i></i><i></i><i></i><i></i><i></i>
+        </div>
+      </div>
+    </section>
+
+    <section class="reading-guide" id="reading-guide">
+      <div>
+        <p class="eyebrow">How to read a walkthrough</p>
+        <h2>Four synchronized forms of evidence</h2>
+      </div>
+      <ol>
+        <li><span>01</span><strong>Intent</strong><small>What the user draws, says, or adjusts.</small></li>
+        <li><span>02</span><strong>Operation</strong><small>The constrained action selected by GlyphWeaver.</small></li>
+        <li><span>03</span><strong>Legacy GDSL</strong><small>The executable intermediate representation.</small></li>
+        <li><span>04</span><strong>Render + diff</strong><small>The visible output and exact mutation.</small></li>
+      </ol>
+    </section>
+
+    <section class="gallery-section" id="gallery">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Process gallery</p>
+          <h2>Choose a construction story</h2>
+        </div>
+        <div class="filters" role="group" aria-label="Filter examples">
+          <button class="filter is-active" data-filter="all">All</button>
+          <button class="filter" data-filter="repeat">Repeat</button>
+          <button class="filter" data-filter="data">Data</button>
+          <button class="filter" data-filter="compose">Compose</button>
+        </div>
+      </div>
+      <div class="gallery-grid" id="gallery-grid"></div>
+    </section>
+  </main>
+
+  <footer>
+    <span>GlyphWeaver process gallery</span>
+    <span>Legacy GDSL · supplementary material</span>
+  </footer>
+
+  <dialog id="walkthrough-dialog" aria-labelledby="dialog-title">
+    <div class="dialog-shell">
+      <header class="dialog-header">
+        <div>
+          <p class="dialog-kicker" id="dialog-kicker"></p>
+          <h2 id="dialog-title"></h2>
+        </div>
+        <button class="close-button" aria-label="Close walkthrough">×</button>
+      </header>
+
+      <div class="step-strip" id="step-strip" role="tablist" aria-label="Walkthrough steps"></div>
+
+      <div class="workspace">
+        <section class="render-panel" aria-labelledby="render-heading">
+          <div class="panel-label"><span id="render-heading">Rendered result</span><span id="render-status">Deterministic preview</span></div>
+          <canvas id="render-canvas" width="760" height="580"></canvas>
+          <div class="change-summary">
+            <span class="change-icon">Δ</span>
+            <div><small>Change from previous step</small><p id="change-text"></p></div>
+          </div>
+        </section>
+
+        <section class="evidence-panel">
+          <div class="intent-card">
+            <div class="actor" id="actor-label">USER</div>
+            <blockquote id="intent-text"></blockquote>
+            <div class="operation-row"><span>Resolved operation</span><code id="operation-code"></code></div>
+          </div>
+          <div class="code-card">
+            <div class="code-toolbar">
+              <div><span class="code-dot red"></span><span class="code-dot amber"></span><span class="code-dot green"></span></div>
+              <span>legacy-gdsl.json</span>
+              <button id="copy-code">Copy</button>
+            </div>
+            <pre><code id="dsl-code"></code></pre>
+          </div>
+        </section>
+      </div>
+
+      <footer class="dialog-footer">
+        <p id="step-explanation"></p>
+        <div class="step-controls">
+          <button id="previous-step">← Previous</button>
+          <span id="step-count"></span>
+          <button id="next-step">Next →</button>
+        </div>
+      </footer>
+    </div>
+  </dialog>
+
+  <script src="js/process-gallery.js"></script>
+</body>
+</html>
