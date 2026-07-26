@@ -1,4 +1,6 @@
 const petalPath = "M0 90C0 29 50 0 85 0C85 78 176 90 176 90C176 90 85 110 85 187C47 187 0 151 0 90Z";
+const redProcessPetalPath = "M0 180C0 58 99.9899 0 169.404 0C169.404 156 350.5 180 350.5 180C350.5 180 169.404 220 169.404 373C94.2053 373 0 302 0 180Z";
+const redProcessOrigin = { x: 353.04, y: 181.05 };
 
 const single = (id, source, dataFunction = {}) => ({
   id, type: "single", origin_point: { x: 0, y: 0 }, source, data_function: dataFunction
@@ -22,8 +24,8 @@ const examples = [
     originalDslFile: "dsl_setting/red_flower_garden.json", paperImage: "public/paper-cases/red-flower-garden.png",
     steps: [
       { title: "Import petal", actor: "USER", intent: "Load the red petal drawn in Figma into GlyphWeaver.", operation: "import_svg", change: "A single PATH unit enters the GDSL.", explanation: "The visual mark remains editable because its SVG geometry and origin are represented directly.", dsl: root("DSL_RED", [redPetal]), view: { count: 1 } },
-      { title: "Set base point", actor: "USER", intent: "Move the base point to the end of the petal.", operation: "update_parameter(origin_point)", change: "Vector.origin_point → { x: 176, y: 90 }", explanation: "The base point makes the next rotation explicit and inspectable.", dsl: root("DSL_RED", [{ ...redPetal, origin_point: { x: 176, y: 90 } }]), view: { count: 1, anchor: true } },
-      { title: "Rotate ×4", actor: "USER", intent: "Rotate 4 times.", operation: "repeat_content(polar)", change: "Wrap Vector in repeat_count: 4; theta: 90°.", explanation: "A constrained repeat operation introduces a polar container instead of generating unrelated shapes.", dsl: root("DSL_RED", [repeat("(red flower)", "polar", 4, [{ ...redPetal, origin_point: { x: 176, y: 90 } }], { theta: 90, relative_base: { x: 0, y: 0 } })]), view: { count: 1, flower: true } },
+      { title: "Set base point", actor: "USER", intent: "Move the base point to the end of the petal.", operation: "update_parameter(origin_point)", change: "Vector.origin_point → { x: 353.04, y: 181.05 }", explanation: "The base point makes the next rotation explicit and inspectable.", dsl: {}, view: { count: 1, anchor: true } },
+      { title: "Rotate ×4", actor: "USER", intent: "Rotate 4 times.", operation: "repeat_content(polar)", change: "Wrap Vector in repeat_count: 4; theta: 90°.", explanation: "A constrained repeat operation introduces a polar container instead of generating unrelated shapes.", dsl: {}, view: { count: 1, flower: true } },
       { title: "Repeat stems", actor: "USER", intent: "Repeat the curve 10 times with a horizontal interval of 52.", operation: "repeat_content(cartesian)", change: "Add cartesian repeat_count: 10; interval_x: 52.", explanation: "The same repeat abstraction works across coordinate systems.", dsl: root("DSL_GARDEN", [repeat("(garden)", "cartesian", 10, [stem], { interval_x: 52, interval_y: 0 })]), view: { count: 10, stems: true } },
       { title: "Encode height", actor: "USER", intent: "Set each curve height from the values.", operation: "update_parameter(data_function)", change: "curve.data_function.scale_y → value", explanation: "Data binding is part of the unit, so the mapping is visible rather than hidden in generated code.", dsl: root("DSL_GARDEN", [repeat("(garden)", "cartesian", 10, [{ ...stem, data_function: { scale_y: "value" } }], { interval_x: 52, interval_y: 0, encoded_data: [0.7,1,0.82,1.18,0.9,1.1,0.76,1.22,0.95,1.08] })]), view: { count: 10, stems: true, data: true } },
       { title: "Attach flowers", actor: "USER", intent: "Add a red flower on top of each curve.", operation: "combine_dsl + stick_to", change: "Add flower unit and relation: flower → curve.top.", explanation: "The relation states attachment separately from geometry, making the final composition reusable and editable.", dsl: root("DSL_GARDEN", [repeat("(garden)", "cartesian", 10, [{ ...stem, data_function: { scale_y: "value" } }, root("red flower", [repeat("(red flower)", "polar", 4, [redPetal], { theta: 90 })])], { interval_x: 52, interval_y: 0, encoded_data: [0.7,1,0.82,1.18,0.9,1.1,0.76,1.22,0.95,1.08] })], [{ source_id: "red flower", target_id: "curve", stick_to: { point: "top", distance: { x: 0, y: 0 } } }]), view: { count: 10, stems: true, data: true, flowers: true } }
@@ -115,11 +117,14 @@ function setupCanvas(canvas) {
   return { ctx, w: rect.width, h: rect.height };
 }
 
-function drawPetal(ctx, x, y, angle, scale, color, pathData = null) {
+function drawPetal(ctx, x, y, angle, scale, color, pathData = null, geometry = {}) {
   ctx.save(); ctx.translate(x, y); ctx.rotate(angle); ctx.scale(scale, scale);
   ctx.fillStyle = color;
   if (pathData && typeof Path2D !== "undefined") {
-    ctx.scale(0.024, 0.024);
+    const origin=geometry.petalOrigin||{x:0,y:0};
+    const normalization=geometry.petalNormalization||0.024;
+    ctx.scale(normalization, normalization);
+    ctx.translate(-origin.x,-origin.y);
     ctx.fill(new Path2D(pathData));
   } else {
     ctx.beginPath(); ctx.moveTo(0, 0);
@@ -127,8 +132,8 @@ function drawPetal(ctx, x, y, angle, scale, color, pathData = null) {
   }
   ctx.restore();
 }
-function drawFlower(ctx, x, y, scale, color, pathData = null) {
-  for (let i = 0; i < 4; i++) drawPetal(ctx, x, y, i * Math.PI / 2, scale, color, pathData);
+function drawFlower(ctx, x, y, scale, color, pathData = null, geometry = {}) {
+  for (let i = 0; i < 4; i++) drawPetal(ctx, x, y, i * Math.PI / 2, scale, color, pathData, geometry);
   ctx.fillStyle = "#f3c34d"; ctx.beginPath(); ctx.arc(x, y, 4 * scale, 0, Math.PI * 2); ctx.fill();
 }
 
@@ -139,10 +144,16 @@ function renderScene(canvas, scene, view, accent, geometry = {}) {
   ctx.lineCap = "round";
   if (scene === "garden") {
     if (!view.stems) {
-      if (view.flower) drawFlower(ctx, cx, cy, Math.min(w,h)/180, accent, geometry.petalPath);
+      if (view.flower) drawFlower(ctx, cx, cy, Math.min(w,h)/180, accent, geometry.petalPath, geometry);
       else {
-        const px=geometry.petalPath?cx-84:cx-45, py=geometry.petalPath?cy-84:cy;
-        drawPetal(ctx,px,py,0,Math.min(w,h)/(geometry.petalPath?132:220),accent,geometry.petalPath);
+        const scale=Math.min(w,h)/(geometry.petalPath?132:220);
+        const normalization=geometry.petalNormalization||0.024;
+        const width=(geometry.petalWidth||2003)*normalization*scale;
+        const height=(geometry.petalHeight||2003)*normalization*scale;
+        const origin=geometry.petalOrigin||{x:0,y:0};
+        const px=cx-width/2+origin.x*normalization*scale;
+        const py=cy-height/2+origin.y*normalization*scale;
+        drawPetal(ctx,px,py,0,scale,accent,geometry.petalPath,geometry);
         if (view.anchor) { ctx.fillStyle="#191a17"; ctx.beginPath(); ctx.arc(px,py,5,0,Math.PI*2);ctx.fill(); }
       }
     } else {
@@ -160,7 +171,7 @@ function renderScene(canvas, scene, view, accent, geometry = {}) {
         } else {
           ctx.strokeStyle="#252622";ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(x,baseY);ctx.bezierCurveTo(x,baseY-ht*.55,x+18,baseY-ht*.65,x+18,baseY-ht);ctx.stroke();
         }
-        if(view.flowers)drawFlower(ctx,flowerX,flowerY,.28,accent,geometry.petalPath);
+        if(view.flowers)drawFlower(ctx,flowerX,flowerY,.28,accent,geometry.petalPath,geometry);
       }
     }
   } else if (scene === "blueFlower" || scene === "scores") {
@@ -220,7 +231,17 @@ function deriveFromPublishedDsl(example, finalDsl) {
   } else if (example.id === "red-garden") {
     const flower = outer.units.find(unit => unit.type === "combine");
     const curve = outer.units.find(unit => unit.type === "single");
-    const petal = flower.units[0].units[0];
+    const importedPetal = single("Vector", { type: "PATH", id: "Vector", fill: "#e30613", path_d: redProcessPetalPath });
+    const anchoredPetal = { ...copy(importedPetal), origin_point: copy(redProcessOrigin) };
+    const processFlower = {
+      id: "DSL_0715_163038",
+      units: [repeat("(DSL_0715_163038)", "polar", 4, [anchoredPetal], {
+        theta: 90, relative_base: { x: 0, y: 0 }
+      })],
+      relation: [],
+      origin_point: { x: -353.04, y: -181.05 },
+      type: "combine"
+    };
     const bareCurve = withoutDataFunctions(curve);
     const repeatedBareCurve = copy(outer);
     repeatedBareCurve.units = [bareCurve];
@@ -229,9 +250,9 @@ function deriveFromPublishedDsl(example, finalDsl) {
     repeatedEncodedCurve.units = [curve];
     repeatedEncodedCurve.relation = [];
     states.push(
-      asRoot(finalDsl, [petal]),
-      asRoot(finalDsl, [petal]),
-      copy(flower),
+      root("DSL_0715_163038", [importedPetal]),
+      root("DSL_0715_163038", [anchoredPetal]),
+      processFlower,
       asRoot(finalDsl, [repeatedBareCurve]),
       asRoot(finalDsl, [repeatedEncodedCurve]),
       copy(finalDsl)
@@ -269,13 +290,29 @@ async function openExample(ex) {
       const petalUnit = flower?.units?.[0]?.units?.[0];
       activeExample.geometry = {
         petalPath: petalUnit?.source?.path_d,
+        petalOrigin: petalUnit?.origin_point || { x: 0, y: 0 },
+        petalNormalization: 0.024,
+        petalWidth: 2003,
+        petalHeight: 2003,
         stemPath: stemUnit?.source?.path_d,
         stemStroke: stemUnit?.source?.stroke,
         stemWidth: stemUnit?.source?.["stroke-width"]
       };
+      activeExample.processGeometry = {
+        petalPath: redProcessPetalPath,
+        petalOrigin: redProcessOrigin,
+        petalNormalization: 0.134,
+        petalWidth: 350.5,
+        petalHeight: 373
+      };
     }
     const derived = deriveFromPublishedDsl(ex, finalDsl);
     activeExample.steps.forEach((step, index) => { step.dsl = derived[index] || finalDsl; });
+    if (ex.id === "red-garden") {
+      activeExample.steps.forEach((step,index)=>{
+        step.geometry=index<3?activeExample.processGeometry:activeExample.geometry;
+      });
+    }
   } catch (error) {
     console.error("Could not load published DSL", error);
   }
@@ -324,7 +361,8 @@ async function openExample(ex) {
   requestAnimationFrame(()=>{
     container.querySelectorAll("canvas[data-step-index]").forEach(canvas=>{
       const index=Number(canvas.dataset.stepIndex);
-      renderScene(canvas,activeExample.scene,activeExample.steps[index].view,activeExample.accent,activeExample.geometry);
+      const step=activeExample.steps[index];
+      renderScene(canvas,activeExample.scene,step.view,activeExample.accent,step.geometry||activeExample.geometry);
     });
     dialog.scrollTop=0;
   });
@@ -336,5 +374,5 @@ document.querySelectorAll(".filter").forEach(btn=>btn.addEventListener("click",(
 document.querySelector(".close-button").addEventListener("click",()=>dialog.close());
 dialog.addEventListener("close",()=>{document.body.style.overflow="";});
 document.getElementById("print-case").addEventListener("click",()=>window.print());
-window.addEventListener("resize",()=>{if(dialog.open)document.querySelectorAll("canvas[data-step-index]").forEach(canvas=>{const index=Number(canvas.dataset.stepIndex);renderScene(canvas,activeExample.scene,activeExample.steps[index].view,activeExample.accent,activeExample.geometry);});});
+window.addEventListener("resize",()=>{if(dialog.open)document.querySelectorAll("canvas[data-step-index]").forEach(canvas=>{const index=Number(canvas.dataset.stepIndex);const step=activeExample.steps[index];renderScene(canvas,activeExample.scene,step.view,activeExample.accent,step.geometry||activeExample.geometry);});});
 buildCards();
