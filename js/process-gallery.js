@@ -346,6 +346,12 @@ async function openExample(ex) {
   const container=document.getElementById("print-steps");
   container.innerHTML=activeExample.steps.map((step,index)=>{
     const isFinal=index===activeExample.steps.length-1;
+    const modality=getInputModality(activeExample,step,index);
+    const inputMarkup=modality.key==="natural"
+      ? `<div class="nl-bubble">“${step.intent}”</div>`
+      : modality.key==="figma"
+        ? `<div class="figma-action"><span class="figma-cursor">◆</span><span>${step.intent}</span></div>`
+        : `<div class="system-inference"><span class="system-mark">✦</span><span>${step.intent}</span></div>`;
     const visual=`<div class="step-render step-svg-render" id="step-render-${activeExample.id}-${index}" data-step-index="${index}" aria-label="${step.title} rendered from its GDSL"></div>`;
     return `<article class="print-step">
       <header class="print-step-heading">
@@ -363,9 +369,9 @@ async function openExample(ex) {
           </div>
         </section>
         <section class="step-evidence">
-          <div class="intent-card">
-            <div class="actor">${step.actor}</div>
-            <blockquote>“${step.intent}”</blockquote>
+          <div class="intent-card input-${modality.key}">
+            <div class="input-modality"><span>${modality.icon}</span>${modality.label}</div>
+            ${inputMarkup}
             <p class="step-explanation">${step.explanation}</p>
           </div>
           <div class="code-card">
@@ -389,6 +395,20 @@ async function openExample(ex) {
     }
     dialog.scrollTop=0;
   });
+}
+
+function getInputModality(example, step, index) {
+  if (step.actor==="SYSTEM") return {key:"system",label:"System inference",icon:"✦"};
+  const figmaSteps={
+    "red-garden":[0,1],
+    "blue-flower":[0,2,3],
+    "better-life":[0,1],
+    "phone-rates":[0,3]
+  };
+  if ((figmaSteps[example.id]||[]).includes(index)) {
+    return {key:"figma",label:"Figma canvas / controls",icon:"◆"};
+  }
+  return {key:"natural",label:"Natural language",icon:"●"};
 }
 
 function addPublishedDefs(svg, defsString) {

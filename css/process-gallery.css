@@ -281,3 +281,102 @@ dialog { overflow-y: auto; }
   .change-icon, .actor { color: #3182ce; }
   .code-card { background: #1a202c; border-radius: 14px; }
 }
+
+/* Input provenance: canvas actions, language instructions, and system work
+   remain visually distinct on screen and in the printed walkthrough. */
+.input-modality {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  font: 700 11px/1.2 var(--mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.input-modality span {
+  display: grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  border-radius: 6px;
+}
+.intent-card.input-figma {
+  border-left: 4px solid #a259ff;
+  background: #fcfaff;
+}
+.input-figma .input-modality { color: #7540bd; }
+.input-figma .input-modality span { color: #fff; background: #a259ff; }
+.figma-action {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  min-height: 76px;
+  padding: 18px;
+  color: #3d2a58;
+  font-size: 18px;
+  font-weight: 600;
+  border: 1px solid #d9c3f5;
+  border-radius: 12px;
+  background-color: #fff;
+  background-image:
+    linear-gradient(rgba(162,89,255,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(162,89,255,.06) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+.figma-cursor {
+  flex: 0 0 auto;
+  color: #a259ff;
+  font-size: 17px;
+  transform: rotate(-12deg);
+}
+.intent-card.input-natural {
+  border-left: 4px solid #3182ce;
+  background: #f8fbff;
+}
+.input-natural .input-modality { color: #2b6cb0; }
+.input-natural .input-modality span { color: #fff; background: #3182ce; border-radius: 50%; }
+.nl-bubble {
+  position: relative;
+  max-width: 92%;
+  padding: 17px 19px;
+  color: #fff;
+  font-size: 18px;
+  line-height: 1.45;
+  background: #3182ce;
+  border-radius: 17px 17px 5px 17px;
+  box-shadow: 0 4px 10px rgba(49,130,206,.14);
+}
+.intent-card.input-system {
+  border-left: 4px solid #38a169;
+  background: #f7fdf9;
+}
+.input-system .input-modality { color: #2f855a; }
+.input-system .input-modality span { color: #fff; background: #38a169; }
+.system-inference {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 18px;
+  color: #276749;
+  font-size: 17px;
+  line-height: 1.5;
+  border: 1px dashed #9ae6b4;
+  border-radius: 12px;
+  background: #f0fff4;
+}
+.system-mark { font-size: 18px; }
+.step-explanation { margin-top: 16px; }
+
+@media print {
+  .intent-card.input-figma { border-left: 3pt solid #7540bd; }
+  .intent-card.input-natural { border-left: 3pt solid #2b6cb0; }
+  .intent-card.input-system { border-left: 3pt solid #2f855a; }
+  .figma-action { background-image: none; }
+  .nl-bubble {
+    color: #fff !important;
+    background: #2b6cb0 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
