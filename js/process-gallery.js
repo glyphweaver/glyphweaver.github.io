@@ -50,10 +50,12 @@ const examples = [
     tags: ["data", "compose"], accent: "#7d50b5", scene: "blueFlower",
     originalDslFile: "dsl_setting/better_life_index.json", paperImage: "public/paper-cases/better-life-index.png",
     steps: [
-      { title: "Import petal", actor: "USER", intent: "Import one indicator petal from the source design.", operation: "import_svg", change: "Create the original Vector 165 PATH unit.", explanation: "The published SVG path is preserved as the leaf unit.", dsl: {}, view: { count: 1 } },
-      { title: "Build country glyph", actor: "USER", intent: "Repeat the petal for the eleven Better Life indicators.", operation: "repeat_content(polar)", change: "Create the published 11-petal polar container.", explanation: "One repeated container represents one country's indicator profile.", dsl: {}, view: { count: 11 } },
-      { title: "Repeat countries", actor: "USER", intent: "Repeat the country glyph for eight countries.", operation: "repeat_content(cartesian)", change: "Create the published 8-item Cartesian container.", explanation: "The country glyph, stem, and their relation are repeated together.", dsl: {}, view: { count: 8 } },
-      { title: "Bind data & labels", actor: "USER", intent: "Bind indicator colors and scales, then label each country.", operation: "bind_data + combine_dsl", change: "Restore the original data functions, relations, and labels.", explanation: "This state is the exact GDSL distributed with the website.", dsl: {}, view: { count: 8, data: true, labels: true } }
+      { title: "Create indicator flower", actor: "USER", intent: "Build the colorful flower from eleven indicator petals.", operation: "repeat_content(polar)", change: "Create DSL_0331_175051 with 11 petals; theta: 32.72°.", explanation: "The flower is completed first and remains available as an independent, reusable GDSL.", dsl: {}, view: { count: 11 } },
+      { title: "Create line", actor: "USER", intent: "Create one vertical line beneath the future flower.", operation: "import_svg", change: "Add the original Vector 166 PATH without a scale mapping.", explanation: "The line is introduced as a separate visual unit.", dsl: {}, view: { count: 1 } },
+      { title: "Repeat lines", actor: "USER", intent: "Repeat the line for eight countries.", operation: "repeat_content(cartesian)", change: "Wrap Vector 166 in an 8-item Cartesian repeat; interval_x: 115.2.", explanation: "Only the lines are repeated at this stage; the flower is still separate.", dsl: {}, view: { count: 8 } },
+      { title: "Vary line heights", actor: "USER", intent: "Give the repeated lines different heights.", operation: "update_parameter(data_function)", change: "Vector 166.data_function.scale_y → Math.random() / 2 + 0.3.", explanation: "The height variation belongs to the repeated line, before any flower is attached.", dsl: {}, view: { count: 8, data: true } },
+      { title: "Place flowers on top", actor: "USER", intent: "Put the colorful flower on top of every line.", operation: "combine_dsl + stick_to", change: "Add DSL_0331_175051 and relation: flower → Vector 166.top.", explanation: "The existing flower is inserted into the repeated container and attached to each line.", dsl: {}, view: { count: 8, data: true } },
+      { title: "Add country labels", actor: "USER", intent: "Add the country name beside each completed glyph.", operation: "combine_dsl + stick_to", change: "Add Mexico TEXT, its country-name function, and the label → Vector 166 relation.", explanation: "Labels are added last, independently from the flower-line construction.", dsl: {}, view: { count: 8, data: true, labels: true } }
     ]
   },
   {
@@ -266,11 +268,24 @@ function deriveFromPublishedDsl(example, finalDsl) {
   } else if (example.id === "better-life") {
     const flower = outer.units.find(unit => unit.type === "combine");
     const stemUnit = outer.units.find(unit => unit.type === "single" && unit.source?.type === "PATH");
-    const petal = flower.units[0].units[0];
-    const repeated = copy(outer);
-    repeated.units = [withoutDataFunctions(stemUnit), withoutDataFunctions(flower)];
-    repeated.relation = copy(outer.relation || []);
-    states.push(asRoot(finalDsl, [petal]), copy(flower), asRoot(finalDsl, [repeated]), copy(finalDsl));
+    const bareLine = withoutDataFunctions(stemUnit);
+    const repeatedLines = copy(outer);
+    repeatedLines.units = [bareLine];
+    repeatedLines.relation = [];
+    const variedLines = copy(outer);
+    variedLines.units = [stemUnit];
+    variedLines.relation = [];
+    const flowerOnLines = copy(outer);
+    flowerOnLines.units = [stemUnit, flower];
+    flowerOnLines.relation = [copy(outer.relation[0])];
+    states.push(
+      copy(flower),
+      asRoot(finalDsl, [bareLine]),
+      asRoot(finalDsl, [repeatedLines]),
+      asRoot(finalDsl, [variedLines]),
+      asRoot(finalDsl, [flowerOnLines]),
+      copy(finalDsl)
+    );
   } else if (example.id === "phone-rates") {
     const glyph = outer.units.find(unit => unit.type === "combine");
     const branch = glyph.units[0].units[0];
