@@ -26,6 +26,7 @@ const examples = [
       { title: "Import petal", actor: "USER", intent: "Load the red petal drawn in Figma into GlyphWeaver.", operation: "import_svg", change: "A single PATH unit enters the GDSL.", explanation: "The visual mark remains editable because its SVG geometry and origin are represented directly.", dsl: root("DSL_RED", [redPetal]), view: { count: 1 } },
       { title: "Set base point", actor: "USER", intent: "Move the base point to the end of the petal.", operation: "update_parameter(origin_point)", change: "Vector.origin_point → { x: 353.04, y: 181.05 }", explanation: "The base point makes the next rotation explicit and inspectable.", dsl: {}, view: { count: 1, anchor: true } },
       { title: "Rotate ×4", actor: "USER", intent: "Rotate 4 times.", operation: "repeat_content(polar)", change: "Wrap Vector in repeat_count: 4; theta: 90°.", explanation: "A constrained repeat operation introduces a polar container instead of generating unrelated shapes.", dsl: {}, view: { count: 1, flower: true } },
+      { title: "Draw curve", actor: "USER", intent: "Draw one curved stem in Figma.", operation: "import_svg", change: "Add the original Vector 141 PATH as a separate visual unit.", explanation: "This curve is the direct-manipulation input that becomes the source of the next repeat operation.", dsl: {}, view: { count: 1, stems: true } },
       { title: "Repeat stems", actor: "USER", intent: "Repeat the curve 20 times across the canvas.", operation: "repeat_content(cartesian)", change: "Add cartesian repeat_count: 20; interval_x: 504.85.", explanation: "The same repeat abstraction works across coordinate systems.", dsl: {}, view: { count: 20, stems: true } },
       { title: "Vary curve scale", actor: "USER", intent: "Give the repeated curves varied widths and heights.", operation: "update_parameter(data_function)", change: "Vector 141.data_function → stochastic scale_x and index-aware stochastic scale_y.", explanation: "The published DSL combines random variation with an index trend; it is not a direct value-to-height mapping.", dsl: {}, view: { count: 20, stems: true, data: true } },
       { title: "Attach flowers", actor: "USER", intent: "Add a red flower on top of each curve.", operation: "combine_dsl + stick_to", change: "Add the flower unit and relation: DSL_0331_221736 → Vector 141.top.", explanation: "This step establishes composition and attachment only; flower size is not mapped yet.", dsl: {}, view: { count: 20, stems: true, data: true, flowers: true } },
@@ -260,6 +261,7 @@ function deriveFromPublishedDsl(example, finalDsl) {
       root("DSL_0715_163038", [importedPetal]),
       root("DSL_0715_163038", [anchoredPetal]),
       processFlower,
+      asRoot(finalDsl, [bareCurve]),
       asRoot(finalDsl, [repeatedBareCurve]),
       asRoot(finalDsl, [repeatedEncodedCurve]),
       attachedUnscaled,
@@ -400,7 +402,7 @@ async function openExample(ex) {
 function getInputModality(example, step, index) {
   if (step.actor==="SYSTEM") return {key:"system",label:"System inference",icon:"✦"};
   const figmaSteps={
-    "red-garden":[0,1],
+    "red-garden":[0,1,3],
     "blue-flower":[0,2,3],
     "better-life":[0,1],
     "phone-rates":[0,3]
