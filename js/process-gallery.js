@@ -449,7 +449,7 @@ async function renderExactDsl(container, dsl, envelope = {}) {
     const group=svg.querySelector(".DSL_rendered_group")||svg;
     const bbox=group.getBBox();
     const width=Math.max(bbox.width,1),height=Math.max(bbox.height,1);
-    const padding=Math.max(width,height)*0.08;
+    const padding=Math.max(width,height)*0.12;
     svg.setAttribute("viewBox",`${bbox.x-padding} ${bbox.y-padding} ${width+padding*2} ${height+padding*2}`);
     svg.setAttribute("preserveAspectRatio","xMidYMid meet");
     svg.setAttribute("width","100%");
