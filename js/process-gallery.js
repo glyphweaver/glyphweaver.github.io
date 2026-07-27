@@ -271,7 +271,7 @@ function deriveFromPublishedDsl(example, finalDsl) {
     const repeatedGlyph = copy(outer);
     repeatedGlyph.units = [withoutDataFunctions(glyph)];
     const withLabels = withoutDataFunctions(outer);
-    states.push(asRoot(finalDsl, [branch]), copy(glyph), asRoot(finalDsl, [withLabels]), copy(finalDsl));
+    states.push(asRoot(finalDsl, [withoutDataFunctions(branch)]), copy(glyph), asRoot(finalDsl, [withLabels]), copy(finalDsl));
   }
   return states;
 }
@@ -283,6 +283,10 @@ async function openExample(ex) {
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const payload = await response.json();
     const finalDsl = payload.dsl || payload;
+    activeExample.renderEnvelope = {
+      defsString: payload.defs_string || "",
+      backgroundColor: payload.background_color || "#ffffff"
+    };
     if (ex.id === "red-garden") {
       const outer = finalDsl.units[0];
       const flower = outer.units.find(unit => unit.type === "combine");
@@ -321,9 +325,7 @@ async function openExample(ex) {
   const container=document.getElementById("print-steps");
   container.innerHTML=activeExample.steps.map((step,index)=>{
     const isFinal=index===activeExample.steps.length-1;
-    const visual=isFinal
-      ? `<img class="step-paper-result" src="${activeExample.paperImage}" alt="${activeExample.title}, published result">`
-      : `<canvas class="step-render" data-step-index="${index}" width="760" height="580"></canvas>`;
+    const visual=`<div class="step-render step-svg-render" id="step-render-${activeExample.id}-${index}" data-step-index="${index}" aria-label="${step.title} rendered from its GDSL"></div>`;
     return `<article class="print-step">
       <header class="print-step-heading">
         <span class="step-index">STEP ${String(index+1).padStart(2,"0")} / ${String(activeExample.steps.length).padStart(2,"0")}</span>
@@ -332,7 +334,7 @@ async function openExample(ex) {
       </header>
       <div class="print-step-body">
         <section class="step-visual">
-          <div class="panel-label"><span>Rendered result</span><span>${isFinal?"Published paper result":"Derived intermediate preview"}</span></div>
+          <div class="panel-label"><span>Rendered result</span><span>${isFinal?"Original GDSL output":"Intermediate GDSL output"}</span></div>
           ${visual}
           <div class="change-summary">
             <span class="change-icon">Δ</span>
@@ -358,14 +360,48 @@ async function openExample(ex) {
   }).join("");
   dialog.showModal();
   document.body.style.overflow="hidden";
-  requestAnimationFrame(()=>{
-    container.querySelectorAll("canvas[data-step-index]").forEach(canvas=>{
-      const index=Number(canvas.dataset.stepIndex);
-      const step=activeExample.steps[index];
-      renderScene(canvas,activeExample.scene,step.view,activeExample.accent,step.geometry||activeExample.geometry);
-    });
+  requestAnimationFrame(async ()=>{
+    const renderTargets=container.querySelectorAll(".step-svg-render[data-step-index]");
+    for (const target of renderTargets) {
+      const index=Number(target.dataset.stepIndex);
+      await renderExactDsl(target,activeExample.steps[index].dsl,activeExample.renderEnvelope);
+    }
     dialog.scrollTop=0;
   });
+}
+
+function addPublishedDefs(svg, defsString) {
+  if (!defsString) return;
+  let defs=svg.querySelector("defs");
+  if (!defs) {
+    defs=document.createElementNS("http://www.w3.org/2000/svg","defs");
+    svg.insertBefore(defs,svg.firstChild);
+  }
+  defs.innerHTML=defsString;
+}
+
+async function renderExactDsl(container, dsl, envelope = {}) {
+  container.innerHTML="";
+  container.style.backgroundColor=envelope.backgroundColor||"#ffffff";
+  try {
+    const generator=new PatternGenerator(container.id);
+    generator.generateFromJSON(copy(dsl));
+    generator.downloadContainer?.remove();
+    const svg=generator.svg;
+    addPublishedDefs(svg,envelope.defsString);
+    await new Promise(resolve=>requestAnimationFrame(resolve));
+    const group=svg.querySelector(".DSL_rendered_group")||svg;
+    const bbox=group.getBBox();
+    const width=Math.max(bbox.width,1),height=Math.max(bbox.height,1);
+    const padding=Math.max(width,height)*0.08;
+    svg.setAttribute("viewBox",`${bbox.x-padding} ${bbox.y-padding} ${width+padding*2} ${height+padding*2}`);
+    svg.setAttribute("preserveAspectRatio","xMidYMid meet");
+    svg.setAttribute("width","100%");
+    svg.setAttribute("height","100%");
+  } catch (error) {
+    console.error("Exact GDSL render failed",error);
+    container.innerHTML=`<div class="render-error">This intermediate GDSL could not be rendered.</div>`;
+  }
 }
 
 document.querySelectorAll(".filter").forEach(btn=>btn.addEventListener("click",()=>{
@@ -374,5 +410,4 @@ document.querySelectorAll(".filter").forEach(btn=>btn.addEventListener("click",(
 document.querySelector(".close-button").addEventListener("click",()=>dialog.close());
 dialog.addEventListener("close",()=>{document.body.style.overflow="";});
 document.getElementById("print-case").addEventListener("click",()=>window.print());
-window.addEventListener("resize",()=>{if(dialog.open)document.querySelectorAll("canvas[data-step-index]").forEach(canvas=>{const index=Number(canvas.dataset.stepIndex);const step=activeExample.steps[index];renderScene(canvas,activeExample.scene,step.view,activeExample.accent,step.geometry||activeExample.geometry);});});
 buildCards();
