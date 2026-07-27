@@ -51,7 +51,10 @@ const examples = [
     tags: ["data", "compose"], accent: "#7d50b5", scene: "blueFlower",
     originalDslFile: "dsl_setting/better_life_index.json", paperImage: "public/paper-cases/better-life-index.png",
     steps: [
-      { title: "Create indicator flower", actor: "USER", intent: "Build the colorful flower from eleven indicator petals.", operation: "repeat_content(polar)", change: "Create DSL_0331_175051 with 11 petals; theta: 32.72°.", explanation: "The flower is completed first and remains available as an independent, reusable GDSL.", dsl: {}, view: { count: 11 } },
+      { title: "Draw one petal", actor: "USER", intent: "Draw one indicator petal in Figma.", operation: "import_svg", change: "Add the original Vector 165 PATH as a single visual unit.", explanation: "The construction starts from one editable petal, not from the completed flower.", dsl: {}, view: { count: 1 } },
+      { title: "Rotate and copy", actor: "USER", intent: "Rotate and copy the petal to make an 11-petal flower.", operation: "repeat_content(polar)", change: "Wrap Vector 165 in a polar repeat; repeat_count: 11; theta: 32.72°.", explanation: "At this stage all eleven petals still use the source petal's original color and size.", dsl: {}, view: { count: 11 } },
+      { title: "Paste the color list", actor: "USER", intent: "Give each petal a different color. Paste this list into the data input: #797979, #E88767, #8D5B8C, #DBA922, #30A557, #7FA943, #CC475C, #247EBF, #2CA2E0, #3CA594, #A84F51.", operation: "paste_data + bind_fill", change: "Paste 11 fill values into encoded_data.combine_0; Vector 165.fill → value['fill'].", explanation: "The list is the palette stored with the published Better Life example. It is pasted into GlyphWeaver's data input and becomes the flower's encoded data.", dsl: {}, view: { count: 11 } },
+      { title: "Vary petal size", actor: "USER", intent: "Give the petals a little random variation in size.", operation: "update_parameter(data_function)", change: "Vector 165.scale → Math.random() * (1.2 - 0.5) + 0.5.", explanation: "Size variation is kept separate from the color list so each mapping remains inspectable.", dsl: {}, view: { count: 11 } },
       { title: "Create line", actor: "USER", intent: "Create one vertical line beneath the future flower.", operation: "import_svg", change: "Add the original Vector 166 PATH without a scale mapping.", explanation: "The line is introduced as a separate visual unit.", dsl: {}, view: { count: 1 } },
       { title: "Repeat lines", actor: "USER", intent: "Repeat the line for eight countries.", operation: "repeat_content(cartesian)", change: "Wrap Vector 166 in an 8-item Cartesian repeat; interval_x: 115.2.", explanation: "Only the lines are repeated at this stage; the flower is still separate.", dsl: {}, view: { count: 8 } },
       { title: "Vary line heights", actor: "USER", intent: "Give the repeated lines different heights.", operation: "update_parameter(data_function)", change: "Vector 166.data_function.scale_y → Math.random() / 2 + 0.3.", explanation: "The height variation belongs to the repeated line, before any flower is attached.", dsl: {}, view: { count: 8, data: true } },
@@ -269,6 +272,13 @@ function deriveFromPublishedDsl(example, finalDsl) {
     );
   } else if (example.id === "better-life") {
     const flower = outer.units.find(unit => unit.type === "combine");
+    const flowerRepeat = flower.units[0];
+    const flowerPetal = flowerRepeat.units[0];
+    const plainRepeatedFlower = copy(flower);
+    plainRepeatedFlower.encoded_data = { combine_0: [] };
+    plainRepeatedFlower.units[0].units[0].data_function = {};
+    const coloredFlower = copy(flower);
+    coloredFlower.units[0].units[0].data_function = { fill: "value['fill']" };
     const stemUnit = outer.units.find(unit => unit.type === "single" && unit.source?.type === "PATH");
     const bareLine = withoutDataFunctions(stemUnit);
     const repeatedLines = copy(outer);
@@ -281,6 +291,9 @@ function deriveFromPublishedDsl(example, finalDsl) {
     flowerOnLines.units = [stemUnit, flower];
     flowerOnLines.relation = [copy(outer.relation[0])];
     states.push(
+      asRoot(finalDsl, [withoutDataFunctions(flowerPetal)]),
+      plainRepeatedFlower,
+      coloredFlower,
       copy(flower),
       asRoot(finalDsl, [bareLine]),
       asRoot(finalDsl, [repeatedLines]),
@@ -404,7 +417,7 @@ function getInputModality(example, step, index) {
   const figmaSteps={
     "red-garden":[0,1,3],
     "blue-flower":[0,2,3],
-    "better-life":[0,1],
+    "better-life":[0,4],
     "phone-rates":[0,3]
   };
   if ((figmaSteps[example.id]||[]).includes(index)) {
